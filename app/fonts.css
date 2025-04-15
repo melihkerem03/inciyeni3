@@ -1,0 +1,22 @@
+@font-face {
+  font-family: 'Flaroper';
+  src: url('/fonts/FLAROPER.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'TypeUltimate';
+  src: url('/fonts/TypeUltimate-FreeDemo.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Butler_ExtraBold_Stencil';
+  src: url('/fonts/Butler_ExtraBold_Stencil.woff2') format('woff2'),
+       url('/fonts/Butler_ExtraBold_Stencil.woff') format('woff');
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+} 

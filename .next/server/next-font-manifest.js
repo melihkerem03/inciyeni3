@@ -1,0 +1,1 @@
+self.__NEXT_FONT_MANIFEST="{\"pages\":{},\"app\":{\"/Users/melihkerem03/Desktop/inciyeni3/app/layout\":[\"static/media/a34f9d1faa5f3315-s.p.woff2\",\"static/media/3e57fe4abb1c4cae-s.p.woff2\",\"static/media/dcc209c0b1ab30af-s.p.woff2\"]},\"appUsingSizeAdjust\":true,\"pagesUsingSizeAdjust\":false}"

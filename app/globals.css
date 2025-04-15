@@ -1,0 +1,108 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Eğer varsa bu satırı kaldırın */
+@import url('https://fonts.googleapis.com/css2?family=Butler:wght@400;500;600;700&display=swap');
+
+:root {
+  --foreground-rgb: 0, 0, 0;
+  --background-rgb: 255, 255, 255;
+  --font-butler: 'Playfair Display', serif;
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: rgb(var(--background-rgb));
+}
+
+/* Webkit tarayıcılar için scroll bar'ı gizle */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Firefox için scroll bar'ı gizle */
+.scrollbar-hide {
+  scrollbar-width: none;
+}
+
+.border-wave::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(to top, transparent, #FFA500/30);
+  z-index: -1;
+}
+
+@keyframes gradient-xy {
+  0% {
+    background-position: 0% 0%;
+  }
+  50% {
+    background-position: 100% 100%;
+  }
+  100% {
+    background-position: 0% 0%;
+  }
+}
+
+.animate-gradient-xy {
+  background-size: 200% 200%;
+  animation: gradient-xy 15s ease infinite;
+}
+
+@keyframes loading-bar {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.animate-loading-bar {
+  animation: loading-bar 1.5s ease-in-out infinite;
+}
+
+@keyframes beam {
+  from {
+    transform: translateY(-100%) translateX(-100%) rotate(45deg);
+  }
+  to {
+    transform: translateY(100%) translateX(100%) rotate(45deg);
+  }
+}
+
+.animate-beam {
+  animation: beam 3s linear infinite;
+}
+
+@keyframes float-slow {
+  0%, 100% { transform: translateY(0) translateX(0); }
+  50% { transform: translateY(-20px) translateX(10px); }
+}
+
+.animate-float-slow {
+  animation: float-slow 15s ease-in-out infinite;
+}
+
+@keyframes float-medium {
+  0%, 100% { transform: translateY(0) translateX(0); }
+  50% { transform: translateY(-15px) translateX(-10px); }
+}
+
+.animate-float-medium {
+  animation: float-medium 12s ease-in-out infinite;
+}
+
+@keyframes float-fast {
+  0%, 100% { transform: translateY(0) translateX(0); }
+  50% { transform: translateY(-10px) translateX(5px); }
+}
+
+.animate-float-fast {
+  animation: float-fast 8s ease-in-out infinite;
+}
