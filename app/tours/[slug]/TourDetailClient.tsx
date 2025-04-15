@@ -62,7 +62,7 @@ export default function TourDetailClient({ tour }: TourDetailProps) {
   // İlk günü varsayılan olarak seç
   const [selectedDay, setSelectedDay] = useState<number>(
     tour.tour_daily_programs.length > 0 
-      ? parseInt(tour.tour_daily_programs[0].day_range) 
+      ? parseInt((tour.tour_daily_programs[0] as any).day_range) 
       : 1
   );
   const [canScrollLeft, setCanScrollLeft] = useState(false);
