@@ -327,7 +327,7 @@ export default function TourTypePage() {
               className="flex gap-8 overflow-x-auto scrollbar-hide pl-[max(calc((100vw-1280px)/2),1rem)] pb-8"
             >
               {tours.map((tour) => {
-                const heroImage = tour.tour_images?.find(img => img.image_type === 'hero');
+                const heroImage = (tour as any).tour_images?.find((img: {image_type: string}) => img.image_type === 'hero');
                 const imagePath = heroImage?.storage_path || tour.hero_image_path;
 
                 return (

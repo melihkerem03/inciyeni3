@@ -172,7 +172,7 @@ export default async function ToursPage() {
         <div className="max-w-7xl mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {tours.map((tour) => {
-              const heroImage = tour.tour_images?.find(img => img.image_type === 'hero');
+              const heroImage = tour.tour_images?.find((img: {image_type: string}) => img.image_type === 'hero');
               const imagePath = heroImage?.storage_path || tour.hero_image_path;
 
               return (

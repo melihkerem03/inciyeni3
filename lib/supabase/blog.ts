@@ -1,5 +1,5 @@
 import { createClient } from '@supabase/supabase-js'
-import { BlogPost } from '../types/blog'
+import { BlogPost as BlogPostType } from '../types/blog'
 
 export const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -40,7 +40,7 @@ export async function getAllBlogPosts() {
     .order('published_at', { ascending: false });
 
   if (error) throw error;
-  return data as BlogPost[];
+  return data as BlogPostType[];
 }
 
 // Tek bir blog yazısını getir
@@ -53,7 +53,7 @@ export async function getBlogPost(slug: string) {
     .single();
 
   if (error) throw error;
-  return data as BlogPost;
+  return data as BlogPostType;
 }
 
 // Kategoriye göre blog yazılarını getir
@@ -73,7 +73,7 @@ export async function getBlogPostsByCategory(categorySlug: string) {
     .order('published_at', { ascending: false });
 
   if (error) throw error;
-  return data as BlogPost[];
+  return data as BlogPostType[];
 }
 
 // Etikete göre blog yazılarını getir
@@ -93,7 +93,7 @@ export async function getBlogPostsByTag(tagSlug: string) {
     .order('published_at', { ascending: false });
 
   if (error) throw error;
-  return data as BlogPost[];
+  return data as BlogPostType[];
 }
 
 // Görüntülenme sayısını artır

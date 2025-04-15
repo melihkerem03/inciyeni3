@@ -62,7 +62,7 @@ export default function TourDetailClient({ tour }: TourDetailProps) {
   // İlk günü varsayılan olarak seç
   const [selectedDay, setSelectedDay] = useState<number>(
     tour.tour_daily_programs.length > 0 
-      ? parseInt((tour.tour_daily_programs[0] as any).day_range) 
+      ? parseInt(String(tour.tour_daily_programs[0].day || '1')) 
       : 1
   );
   const [canScrollLeft, setCanScrollLeft] = useState(false);
@@ -332,14 +332,14 @@ export default function TourDetailClient({ tour }: TourDetailProps) {
             {dailyPrograms.map((program) => (
               <button
                 key={program.id}
-                onClick={() => setSelectedDay(parseInt(program.day_range))}
+                onClick={() => setSelectedDay(parseInt(String(program.day || '1')))}
                 className={`px-6 py-3 rounded-full transition-colors ${
-                  selectedDay === parseInt(program.day_range)
+                  selectedDay === parseInt(String(program.day || '1'))
                     ? 'bg-[#1A2A1A] text-white'
                     : 'bg-white/80 text-gray-700 hover:bg-white'
                 }`}
               >
-                {program.day_range}. Gün
+                {program.day || '1'}. Gün
               </button>
             ))}
           </div>
@@ -348,7 +348,7 @@ export default function TourDetailClient({ tour }: TourDetailProps) {
           <div className="grid grid-cols-12 gap-16">
             <div className="col-span-12 lg:col-span-7">
               {dailyPrograms
-                .filter(program => parseInt(program.day_range) === selectedDay)
+                .filter(program => parseInt(String(program.day || '1')) === selectedDay)
                 .map(program => (
                   <div 
                     key={program.id} 
