@@ -5,6 +5,10 @@ import Image from 'next/image';
 import Header from '@/components/common/header';
 import { Tour } from '@/types/tour';
 import { createClient } from '@supabase/supabase-js';
+import React from 'react';
+import PricesSection from './PricesSection';
+import Link from 'next/link';
+import { formatDate } from '@/lib/utils';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -58,16 +62,59 @@ const getGalleryImages = (tour: Tour) => {
     .sort((a, b) => (a.display_order || 0) - (b.display_order || 0));
 };
 
+// Para birimi sembollerini tanımla
+const currencySymbols: Record<string, string> = {
+  USD: '$',
+  EUR: '€',
+  TRY: '₺'
+};
+
+// Fiyat formatlaması için güvenilir fonksiyon
+const formatPrice = (price: number | null | undefined, currency: string | null | undefined) => {
+  const safePrice = typeof price === 'number' ? price : 0;
+  const safeCurrency = currency && typeof currency === 'string' ? currency.toUpperCase() : 'USD';
+  const symbol = currencySymbols[safeCurrency] || safeCurrency;
+  
+  return `${Intl.NumberFormat('tr-TR').format(safePrice)} ${symbol}`;
+};
+
 export default function TourDetailClient({ tour }: TourDetailProps) {
+  console.log('Para birimi:', tour.base_price_currency); // Hata ayıklama için
+  
+  // Fiyat ve para birimi bilgilerini al
+  const basePrice = tour.base_price || 0;
+  const baseCurrency = tour.base_price_currency || 'USD';
+
+  // Ekran boyutu ve yönü için state'ler
+  const [windowWidth, setWindowWidth] = useState<number>(0);
+  const [isPortrait, setIsPortrait] = useState<boolean>(false);
+  const [isMobile, setIsMobile] = useState<boolean>(false);
+
   // İlk günü varsayılan olarak seç
-  const [selectedDay, setSelectedDay] = useState<number>(
-    tour.tour_daily_programs.length > 0 
-      ? parseInt(String(tour.tour_daily_programs[0].day || '1')) 
-      : 1
-  );
+  const [selectedDay, setSelectedDay] = useState<number>(1);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+
+  // Ekran boyutlarını ve yönünü izle
+  useEffect(() => {
+    // İlk render'da pencere boyutlarını ayarla
+    setWindowWidth(window.innerWidth);
+    // Portrait mode tespiti (genişlik < yükseklik)
+    setIsPortrait(window.innerHeight > window.innerWidth);
+    // Mobil cihaz tespiti (768px genişlikten az)
+    setIsMobile(window.innerWidth < 768);
+
+    // Resize olayını dinle
+    const handleResize = () => {
+      setWindowWidth(window.innerWidth);
+      setIsPortrait(window.innerHeight > window.innerWidth);
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const handleScroll = () => {
     if (scrollContainerRef.current) {
@@ -79,11 +126,9 @@ export default function TourDetailClient({ tour }: TourDetailProps) {
 
   const scroll = (direction: 'left' | 'right') => {
     if (scrollContainerRef.current) {
-      const scrollAmount = 400;
-      scrollContainerRef.current.scrollBy({
-        left: direction === 'left' ? -scrollAmount : scrollAmount,
-        behavior: 'smooth'
-      });
+      const { clientWidth } = scrollContainerRef.current;
+      const scrollAmount = direction === 'left' ? -clientWidth / 2 : clientWidth / 2;
+      scrollContainerRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
     }
   };
 
@@ -98,10 +143,414 @@ export default function TourDetailClient({ tour }: TourDetailProps) {
   const mapImage = getMapImage(tour);
   const galleryImages = getGalleryImages(tour);
 
-  // Günlük programları bul
-  const dailyPrograms = tour.tour_daily_programs
-    .sort((a, b) => a.day - b.day);
+  // Günlük programları hazırla ve düzenle
+  const dailyPrograms = React.useMemo(() => {
+    if (!tour.tour_daily_programs || tour.tour_daily_programs.length === 0) {
+      return [];
+    }
+    
+    return tour.tour_daily_programs.map(program => {
+      // day_range değerinden ilk günü çıkar (1-2 aralığından 1 değerini alır)
+      let day = 1;
+      
+      if (program.day_range) {
+        const dayParts = program.day_range.split('-');
+        if (dayParts.length > 0 && !isNaN(parseInt(dayParts[0]))) {
+          day = parseInt(dayParts[0]);
+        }
+      }
+      
+      return { ...program, day };
+    }).sort((a, b) => a.day - b.day);
+  }, [tour.tour_daily_programs]);
+  
+  // İlk günü varsayılan olarak seç
+  useEffect(() => {
+    if (dailyPrograms.length > 0) {
+      setSelectedDay(dailyPrograms[0].day);
+    }
+  }, [dailyPrograms]);
 
+  // Gün değişiklik işleyicisi
+  const handleDayChange = (day: number) => {
+    console.log("Gün değiştiriliyor:", day);
+    setSelectedDay(day);
+  };
+
+  // Mobil dikey görünüm için koşul
+  const isMobilePortrait = isMobile && isPortrait;
+
+  // İçeriği koşullu olarak render et
+  if (isMobilePortrait) {
+    return (
+      <main className="bg-[#f1dbc4]">
+        {/* Hero Section - Mobil */}
+        <section className="relative h-[50vh]">
+          <div className="absolute inset-0">
+            <div className="relative h-full">
+              {/* Base background image */}
+              <Image
+                src="/images/tours-bg.png"
+                alt=""
+                fill
+                className="object-cover"
+                priority
+                quality={100}
+              />
+              
+              {/* Hero image with mask */}
+              <div 
+                className="absolute inset-0"
+                style={{
+                  maskImage: 'url("/images/tours-bg.png")',
+                  WebkitMaskImage: 'url("/images/tours-bg.png")',
+                  maskSize: 'cover',
+                  WebkitMaskSize: 'cover',
+                }}
+              >
+                {/* Hero image */}
+                {heroImage && (
+                  <Image
+                    src={getStorageUrl(heroImage.storage_path)}
+                    alt={heroImage.alt_text || tour.title}
+                    fill
+                    className="object-cover"
+                    priority
+                  />
+                )}
+                {/* Gradient overlay */}
+                <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-[#1A2A1A]" />
+              </div>
+            </div>
+          </div>
+
+          {/* Header */}
+          <Header />
+
+          {/* Hero Content */}
+          <div className="relative h-full px-4">
+            <div className="absolute inset-0 flex flex-col justify-center">
+              <div className="text-white">
+                <div className="flex items-center gap-2 text-xs font-semibold text-emerald-400 tracking-wider uppercase mb-2">
+                  <span>{tour.region}</span>
+                  <span>•</span>
+                  <span>{tour.duration}</span>
+                </div>
+                <h1 className="font-butler font-bold text-3xl text-white mb-4">
+                  {tour.title}
+                </h1>
+                <div className="flex items-center gap-4">
+                  <div>
+                    <span className="block text-xs text-white/80">Başlangıç Fiyatı</span>
+                    <span className="text-2xl font-semibold">{formatPrice(basePrice, baseCurrency)}</span>
+                  </div>
+                  
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+        
+        {/* Görseller Bölümü - Mobil */}
+        <section className="px-4 mt-6 mb-8">
+          <div className="relative">
+            {/* Ana Görsel */}
+            {galleryImages[0] && (
+              <div className="relative overflow-hidden rounded-2xl aspect-[4/3]">
+                <Image
+                  src={getStorageUrl(galleryImages[0].storage_path)}
+                  alt={galleryImages[0].alt_text || "Tur görseli"}
+                  fill
+                  className="object-cover"
+                />
+              </div>
+            )}
+
+            {/* Üst Üste Binen İkinci Görsel */}
+            {galleryImages[1] && (
+              <div className="absolute -right-2 bottom-8 w-[40%] aspect-square">
+                <div className="relative w-full h-full overflow-hidden rounded-2xl shadow-lg">
+                  <Image
+                    src={getStorageUrl(galleryImages[1].storage_path)}
+                    alt={galleryImages[1].alt_text || "Tur görseli"}
+                    fill
+                    className="object-cover"
+                  />
+                </div>
+              </div>
+            )}
+          </div>
+        </section>
+        
+        {/* İçerik Bölümü - Mobil */}
+        <section className="px-4 mb-0 bg-[#f1dbc4] rounded-t-3xl pt-8">
+          <div className="space-y-6">
+            {/* Başlık */}
+            <h2 className="font-butler text-3xl">
+              <span className="text-[#B68D52]">{tour.title}</span> 
+            </h2>
+
+            {/* Alt Başlık */}
+            <div className="flex items-center gap-4 text-gray-600 text-sm">
+              <div className="flex items-center gap-1.5">
+                <svg className="w-4 h-4 text-[#B68D52]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <span>{tour.duration}</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <svg className="w-4 h-4 text-[#B68D52]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                </svg>
+                <span>{tour.region}</span>
+              </div>
+            </div>
+
+            {/* Açıklama */}
+            <div className="space-y-3">
+              <p className="text-gray-700 text-sm leading-relaxed">
+                {tour.short_description}
+              </p>
+              <p className="text-gray-700 text-sm leading-relaxed">
+                {tour.long_description}
+              </p>
+            </div>
+
+            {/* Price and CTA */}
+            <div className="bg-white rounded-3xl shadow-lg p-6 mb-8">
+              <div className="mb-6">
+                <div className="text-sm text-gray-500 mb-1">Başlangıç fiyatı</div>
+                <div className="flex items-baseline">
+                  <span className="text-3xl font-bold text-gray-900">
+                    {formatPrice(tour.base_price, tour.base_price_currency)}
+                  </span>
+                  <span className="text-sm text-gray-500 ml-2">/ kişi başı</span>
+                </div>
+              </div>
+              
+              
+              
+              <div className="mt-6 text-center">
+                <p className="text-sm text-gray-500">
+                  Özel fiyat teklifleri için bizimle iletişime geçin
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+        
+        {/* Tur Özellikleri Bölümü - Mobil */}
+        <section className="px-4 bg-[#f1dbc4]">
+          {/* Önemli Noktalar */}
+          <div className="py-6 border-t border-gray-100">
+            <h3 className="text-xl font-butler mb-4">Önemli Noktalar</h3>
+            <ul className="space-y-3">
+              {(tour.tour_highlights || [])
+                .sort((a, b) => (a.display_order || 0) - (b.display_order || 0))
+                .map((highlight) => (
+                  <li key={highlight.id} className="flex items-start gap-3">
+                    <span className="w-2 h-2 rounded-full bg-[#B68D52] mt-2 flex-shrink-0"></span>
+                    <span className="text-sm text-gray-700">{highlight.content}</span>
+                  </li>
+                ))}
+            </ul>
+          </div>
+
+          {/* Dahil */}
+          <div className="py-6 border-t border-gray-100">
+            <h3 className="text-xl font-butler mb-4">Dahil</h3>
+            <ul className="space-y-3">
+              {(tour.tour_inclusions || [])
+                .sort((a, b) => (a.display_order || 0) - (b.display_order || 0))
+                .map((inclusion) => (
+                  <li key={inclusion.id} className="flex items-start gap-3">
+                    <svg className="w-5 h-5 text-[#B68D52] flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                    <span className="text-sm text-gray-700">{inclusion.content}</span>
+                  </li>
+                ))}
+            </ul>
+          </div>
+
+          
+          
+
+          {/* İpuçları */}
+          {tour.tour_tips && tour.tour_tips.length > 0 && (
+            <div className="py-6 border-t border-gray-100">
+              <h3 className="text-xl font-butler mb-4">İpuçları</h3>
+              <div className="space-y-4">
+                {tour.tour_tips.map((tip) => (
+                  <div key={tip.id} className="flex items-start gap-3">
+                    <span className="p-1.5 rounded-full bg-[#B68D52]/10 flex-shrink-0">
+                      <svg className="w-4 h-4 text-[#B68D52]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                      </svg>
+                    </span>
+                    <p className="text-sm text-gray-700">{tip.content}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+          
+          
+        </section>
+        
+        {/* Günlük Program Bölümü - Mobil */}
+        <section className="py-10 bg-[#f1dbc4]">
+          <div className="px-4">
+            {/* Başlık */}
+            <h2 className="text-2xl font-butler mb-6">
+              Günlük <span className="text-[#B68D52]">program</span>
+            </h2>
+
+            {/* Program Seçici - Yatay Kaydırılabilir - Z-INDEX ARTTIRILDI */}
+            {dailyPrograms.length > 1 && (
+              <div className="mb-6 relative z-10">
+                <div className="overflow-x-auto -mx-4 px-4 scrollbar-hidden pb-2"
+                  style={{
+                    WebkitOverflowScrolling: 'touch',
+                    scrollbarWidth: 'none',
+                    msOverflowStyle: 'none'
+                  }}>
+                  <div className="flex gap-2 min-w-max">
+                    {dailyPrograms.map((program) => (
+                      <button
+                        key={program.id}
+                        onClick={() => handleDayChange(program.day)}
+                        className={`px-4 py-2 rounded-full text-sm whitespace-nowrap transition-colors cursor-pointer active:bg-gray-800 ${
+                          selectedDay === program.day
+                            ? 'bg-[#1A2A1A] text-white'
+                            : 'bg-white/80 text-gray-700 hover:bg-white'
+                        }`}
+                        style={{ touchAction: "manipulation" }}
+                      >
+                        {program.day}. Gün
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                {/* Custom CSS ekleme */}
+                <style jsx>{`
+                  .scrollbar-hidden::-webkit-scrollbar {
+                    display: none;
+                  }
+                `}</style>
+              </div>
+            )}
+
+            {/* Seçili Günün İçeriği */}
+            <div className="relative z-0">
+              {dailyPrograms
+                .filter(program => program.day === selectedDay)
+                .map(program => (
+                  <div 
+                    key={program.id} 
+                    className="space-y-4 p-6 bg-white rounded-2xl mb-6"
+                  >
+                    <h3 className="text-xl font-butler text-gray-900">
+                      {program.title}
+                    </h3>
+                    <div className="prose max-w-none">
+                      <p className="text-sm text-gray-600 whitespace-pre-line">
+                        {program.description}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+            </div>
+
+            {/* Harita */}
+            {mapImage && (
+              <div className="relative h-[250px] rounded-2xl overflow-hidden mt-2 bg-white/50 p-2">
+                <Image
+                  src={getStorageUrl(mapImage.storage_path)}
+                  alt={mapImage.alt_text || "Tur haritası"}
+                  fill
+                  className="object-contain"
+                />
+              </div>
+            )}
+          </div>
+        </section>
+        
+        {/* Resimler Bölümü - Mobil */}
+        <section className="pb-16 overflow-x-hidden">
+          <div className="px-4 mb-5">
+            <div className="flex items-center justify-between">
+              <div className="flex flex-col">
+                <h2 className="text-2xl font-butler">Seyahat</h2>
+                <span className="text-2xl font-butler text-[#B68D52]">görüntüleri</span>
+              </div>
+
+              {/* Mobile Navigation Arrows */}
+              <div className="flex gap-2">
+                <button 
+                  onClick={() => scroll('left')}
+                  disabled={!canScrollLeft}
+                  className={`w-9 h-9 rounded-full border border-[#B68D52] flex items-center justify-center text-[#B68D52] transition-colors
+                    ${canScrollLeft ? 'hover:bg-[#B68D52] hover:text-white active:bg-[#B68D52] active:text-white' : 'opacity-50 cursor-not-allowed'}`}
+                  aria-label="Önceki görseller"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                  </svg>
+                </button>
+                <button 
+                  onClick={() => scroll('right')}
+                  disabled={!canScrollRight}
+                  className={`w-9 h-9 rounded-full border border-[#B68D52] flex items-center justify-center text-[#B68D52] transition-colors
+                    ${canScrollRight ? 'hover:bg-[#B68D52] hover:text-white active:bg-[#B68D52] active:text-white' : 'opacity-50 cursor-not-allowed'}`}
+                  aria-label="Sonraki görseller"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Scrollable Images - Mobil */}
+          <div className="relative w-full">
+            <div 
+              ref={scrollContainerRef}
+              onScroll={handleScroll}
+              className="flex gap-4 overflow-x-auto snap-x snap-mandatory scrollbar-hide pl-4 pb-4"
+              style={{
+                WebkitOverflowScrolling: 'touch',
+                scrollbarWidth: 'none',
+                msOverflowStyle: 'none',
+                paddingRight: '1rem'
+              }}
+            >
+              {galleryImages.map((image) => (
+                <div 
+                  key={image.id}
+                  className="flex-none w-[280px] h-[180px] relative rounded-xl overflow-hidden snap-center"
+                >
+                  <Image
+                    src={getStorageUrl(image.storage_path)}
+                    alt={image.alt_text || "Tur görseli"}
+                    fill
+                    className="object-cover"
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+        
+        {/* Fiyatlar ve Tarihler Bölümü - Client Component olarak ayrıldı */}
+        <PricesSection tour={tour} />
+      </main>
+    );
+  }
+
+  // Masaüstü veya yatay görünüm için orijinal tasarım
   return (
     <main className="relative bg-[#f1dbc4]">
       {/* Hero Section */}
@@ -162,14 +611,9 @@ export default function TourDetailClient({ tour }: TourDetailProps) {
               <div className="flex items-center gap-6">
                 <div>
                   <span className="block text-sm text-white/80">Başlangıç Fiyatı</span>
-                  <span className="text-3xl font-semibold">{tour.base_price}-$</span>
+                  <span className="text-3xl font-semibold">{formatPrice(basePrice, baseCurrency)}</span>
                 </div>
-                <button className="inline-flex items-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white px-8 py-4 rounded-full transition-colors">
-                  Hemen Rezervasyon Yapın
-                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                  </svg>
-                </button>
+                
               </div>
             </div>
           </div>
@@ -245,18 +689,30 @@ export default function TourDetailClient({ tour }: TourDetailProps) {
                   </p>
                 </div>
 
-                {/* Fiyat ve CTA */}
-                <div className="flex items-center gap-8 pt-4">
-                  <div>
-                    <span className="block text-sm text-gray-500">Başlangıç Fiyatı</span>
-                    <span className="text-3xl font-semibold text-[#B68D52]">{tour.base_price}-$</span>
+                {/* Price and CTA */}
+                <div className="bg-white rounded-3xl shadow-lg p-6 mb-8">
+                  <div className="mb-6">
+                    <div className="text-sm text-gray-500 mb-1">Başlangıç fiyatı</div>
+                    <div className="flex items-baseline">
+                      <span className="text-3xl font-bold text-gray-900">
+                        {formatPrice(tour.base_price, tour.base_price_currency)}
+                      </span>
+                      <span className="text-sm text-gray-500 ml-2">/ kişi başı</span>
+                    </div>
                   </div>
-                  <button className="inline-flex items-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white px-8 py-4 rounded-full transition-colors">
-                    Hemen Rezervasyon Yapın
-                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                    </svg>
-                  </button>
+                  
+                  <Link 
+                    href={`/contact?tour=${tour.title}`}
+                    className="block w-full bg-[#1A2A1A] hover:bg-[#2C3C2C] text-white text-center font-medium py-3 rounded-xl transition duration-300"
+                  >
+                    Hemen Bilgi Alın
+                  </Link>
+                  
+                  <div className="mt-6 text-center">
+                    <p className="text-sm text-gray-500">
+                      Özel fiyat teklifleri için bizimle iletişime geçin
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>
@@ -332,14 +788,14 @@ export default function TourDetailClient({ tour }: TourDetailProps) {
             {dailyPrograms.map((program) => (
               <button
                 key={program.id}
-                onClick={() => setSelectedDay(parseInt(String(program.day || '1')))}
+                onClick={() => setSelectedDay(program.day)}
                 className={`px-6 py-3 rounded-full transition-colors ${
-                  selectedDay === parseInt(String(program.day || '1'))
+                  selectedDay === program.day
                     ? 'bg-[#1A2A1A] text-white'
                     : 'bg-white/80 text-gray-700 hover:bg-white'
                 }`}
               >
-                {program.day || '1'}. Gün
+                {program.day}. Gün
               </button>
             ))}
           </div>
@@ -348,7 +804,7 @@ export default function TourDetailClient({ tour }: TourDetailProps) {
           <div className="grid grid-cols-12 gap-16">
             <div className="col-span-12 lg:col-span-7">
               {dailyPrograms
-                .filter(program => parseInt(String(program.day || '1')) === selectedDay)
+                .filter(program => program.day === selectedDay)
                 .map(program => (
                   <div 
                     key={program.id} 
@@ -447,100 +903,8 @@ export default function TourDetailClient({ tour }: TourDetailProps) {
         </div>
       </section>
 
-      {/* Fiyatlar ve Tarihler Bölümü */}
-      <section className="pb-24">
-        <div className="max-w-7xl mx-auto px-4">
-          {/* Başlık */}
-          <div className="mb-12">
-            <h2 className="text-5xl font-butler">
-              Tüm <span className="text-[#B68D52]">tarihler ve fiyatlar</span>
-            </h2>
-            <h3 className="text-4xl font-butler mt-2">tek bakışta</h3>
-          </div>
-
-          {/* Filtreler */}
-          <div className="mb-8">
-            <div className="flex flex-wrap items-center gap-4">
-              <div>
-                <span className="block text-sm font-medium mb-2">Seyahat dönemi</span>
-                <button className="flex items-center gap-2 px-6 py-3 rounded-full bg-white border border-blue-500 text-blue-500">
-                  Tümünü göster
-                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                  </svg>
-                </button>
-              </div>
-
-              <div>
-                <span className="block text-sm font-medium mb-2">Fiyat aralığı</span>
-                <button className="flex items-center gap-2 px-6 py-3 rounded-full bg-[#1A2A1A] text-white">
-                  Tümünü göster
-                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                  </svg>
-                </button>
-              </div>
-
-              <div className="flex gap-2">
-                <button className="px-6 py-3 rounded-full bg-white text-gray-700 hover:bg-gray-50">
-                  Bütçe
-                </button>
-                <button className="px-6 py-3 rounded-full bg-white text-gray-700 hover:bg-gray-50">
-                  Standart
-                </button>
-                <button className="px-6 py-3 rounded-full bg-white text-gray-700 hover:bg-gray-50">
-                  Üst
-                </button>
-              </div>
-
-              <div className="ml-auto flex items-center gap-4">
-                <button className="text-emerald-600 hover:text-emerald-700 font-medium flex items-center gap-1">
-                  Neler dahildir?
-                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
-                </button>
-                <button className="text-emerald-600 hover:text-emerald-700 font-medium flex items-center gap-1">
-                  Ek maliyetler
-                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
-                </button>
-              </div>
-            </div>
-          </div>
-
-          {/* Tablo */}
-          <div className="bg-white rounded-3xl overflow-hidden">
-            {/* Tablo Başlık */}
-            <div className="grid grid-cols-5 px-8 py-4 border-b border-gray-100">
-              <div className="font-medium">Seyahat dönemi</div>
-              <div className="font-medium">Fiyat aralığı</div>
-              <div className="font-medium">Kaçış</div>
-              <div className="font-medium">Seyahat fiyatı uçuş dahil</div>
-              <div></div>
-            </div>
-
-            {/* Tablo Satırları */}
-            {tour.tour_dates_prices.map((datePrice) => (
-              <div key={datePrice.id} className="grid grid-cols-5 px-8 py-6 border-b border-gray-100 items-center hover:bg-gray-50">
-                <div>{datePrice.travel_period}</div>
-                <div>{datePrice.price_category}</div>
-                <div>{datePrice.airline}</div>
-                <div>{datePrice.price}-$</div>
-                <div>
-                  <button className="inline-flex items-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white px-6 py-3 rounded-full transition-colors">
-                    Seyahat teklifi al
-                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                    </svg>
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      {/* Fiyatlar ve Tarihler Bölümü - Client Component olarak ayrıldı */}
+      <PricesSection tour={tour} />
 
       {/* Faydalı ve Pratik Bilgiler Bölümü */}
       <section className="pb-24">
@@ -583,9 +947,9 @@ export default function TourDetailClient({ tour }: TourDetailProps) {
                       
                       {/* Rain Bar - Above Temperature */}
                       <div 
-                        className="flex w-full bg-white absolute z-[2] bottom-0 rounded-xl"
+                        className="flex w-full bg-blue-400 absolute z-[2] bottom-0 rounded-xl"
                         style={{ 
-                          height: `${(month.rainfall / 8) * 100}%`,
+                          height: `${(month.rainfall / 8) * 40}%`,
                           opacity: 0.8
                         }}
                       />

@@ -162,15 +162,15 @@ export default function OpportunityPage() {
         {/* Hero Content */}
         <div className="relative h-full max-w-7xl mx-auto px-4">
           <div className="absolute inset-0 flex flex-col justify-center">
-            <div className="max-w-4xl text-white">
+            <div className="max-w-4xl text-white px-4 md:px-0">
               <span className="inline-block text-sm font-semibold text-emerald-400 tracking-wider uppercase mb-6">
-                {settings?.hero_subtitle}
+                ÖZEL TEKLİFLER
               </span>
               <h1 className="font-butler font-bold text-5xl lg:text-7xl text-white">
-                {settings?.hero_title}
+                {settings?.hero_title || "Sınırlı Süreli Seyahat Fırsatları"}
               </h1>
               <p className="text-xl mt-6 text-white/90 max-w-2xl">
-                {settings?.hero_description}
+                {settings?.hero_subtitle || "En iyi fiyatlarla en güzel deneyimleri keşfedin."}
               </p>
             </div>
           </div>

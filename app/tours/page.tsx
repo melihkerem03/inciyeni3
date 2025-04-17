@@ -40,6 +40,22 @@ async function getToursData() {
   return tours
 }
 
+// Para birimi sembollerini tanımla
+const currencySymbols: Record<string, string> = {
+  USD: '$',
+  EUR: '€',
+  TRY: '₺'
+};
+
+// Fiyat formatlaması için güvenilir fonksiyon
+const formatPrice = (price: number | null | undefined, currency: string | null | undefined) => {
+  const safePrice = typeof price === 'number' ? price : 0;
+  const safeCurrency = currency && typeof currency === 'string' ? currency.toUpperCase() : 'USD';
+  const symbol = currencySymbols[safeCurrency] || safeCurrency;
+  
+  return `${Intl.NumberFormat('tr-TR').format(safePrice)} ${symbol}`;
+};
+
 export default async function ToursPage() {
   const tours = await getToursData()
 
@@ -90,7 +106,7 @@ export default async function ToursPage() {
         {/* Hero Content */}
         <div className="relative h-full max-w-7xl mx-auto px-4">
           <div className="absolute inset-0 flex flex-col justify-center">
-            <div className="max-w-4xl text-white">
+            <div className="max-w-4xl text-white px-4 md:px-0">
               <span className="inline-block text-sm font-semibold text-emerald-400 tracking-wider uppercase mb-6">
                 TÜM TURLARIMIZ
               </span>
@@ -108,61 +124,64 @@ export default async function ToursPage() {
       {/* Filter Section */}
       <section className="relative z-10">
         <div className="max-w-7xl mx-auto px-4">
-          <div className="bg-white rounded-full shadow-md p-6 flex items-center justify-between gap-6">
-            {/* Hedefler Filter */}
-            <button className="flex items-center gap-3 px-8 py-4 hover:bg-gray-50 rounded-full transition-colors group">
-              <svg className="w-6 h-6 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064" />
-              </svg>
-              <span className="font-medium text-lg">Hedefler</span>
-              <svg className="w-5 h-5 text-gray-400 group-hover:text-emerald-500 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-              </svg>
-            </button>
+          {/* Filtreleme barını yatay kaydırılabilir hale getiriyoruz */}
+          <div className="bg-white rounded-2xl md:rounded-full shadow-md p-2 md:p-6 overflow-x-auto scrollbar-hide">
+            <div className="flex flex-nowrap items-center gap-1 md:gap-6 min-w-max">
+              {/* Hedefler Filter */}
+              <button className="flex items-center gap-2 md:gap-3 px-4 py-3 md:px-8 md:py-4 whitespace-nowrap hover:bg-gray-50 rounded-full transition-colors group">
+                <svg className="w-5 h-5 md:w-6 md:h-6 text-emerald-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064" />
+                </svg>
+                <span className="font-medium text-sm md:text-lg">Hedefler</span>
+                <svg className="w-4 h-4 md:w-5 md:h-5 text-gray-400 group-hover:text-emerald-500 transition-colors flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
 
-            {/* Gezi türü Filter */}
-            <button className="flex items-center gap-3 px-8 py-4 hover:bg-gray-50 rounded-full transition-colors group">
-              <svg className="w-6 h-6 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-              </svg>
-              <span className="font-medium text-lg">Gezi türü</span>
-              <svg className="w-5 h-5 text-gray-400 group-hover:text-emerald-500 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-              </svg>
-            </button>
+              {/* Gezi türü Filter */}
+              <button className="flex items-center gap-2 md:gap-3 px-4 py-3 md:px-8 md:py-4 whitespace-nowrap hover:bg-gray-50 rounded-full transition-colors group">
+                <svg className="w-5 h-5 md:w-6 md:h-6 text-emerald-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
+                <span className="font-medium text-sm md:text-lg">Gezi türü</span>
+                <svg className="w-4 h-4 md:w-5 md:h-5 text-gray-400 group-hover:text-emerald-500 transition-colors flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
 
-            {/* Bütçe Filter */}
-            <button className="flex items-center gap-3 px-8 py-4 hover:bg-gray-50 rounded-full transition-colors group">
-              <svg className="w-6 h-6 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              <span className="font-medium text-lg">Bütçe</span>
-              <svg className="w-5 h-5 text-gray-400 group-hover:text-emerald-500 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-              </svg>
-            </button>
+              {/* Bütçe Filter */}
+              <button className="flex items-center gap-2 md:gap-3 px-4 py-3 md:px-8 md:py-4 whitespace-nowrap hover:bg-gray-50 rounded-full transition-colors group">
+                <svg className="w-5 h-5 md:w-6 md:h-6 text-emerald-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <span className="font-medium text-sm md:text-lg">Bütçe</span>
+                <svg className="w-4 h-4 md:w-5 md:h-5 text-gray-400 group-hover:text-emerald-500 transition-colors flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
 
-            {/* Seyahat ayı Filter */}
-            <button className="flex items-center gap-3 px-8 py-4 hover:bg-gray-50 rounded-full transition-colors group">
-              <svg className="w-6 h-6 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-              </svg>
-              <span className="font-medium text-lg">Seyahat ayı</span>
-              <svg className="w-5 h-5 text-gray-400 group-hover:text-emerald-500 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-              </svg>
-            </button>
+              {/* Seyahat ayı Filter */}
+              <button className="flex items-center gap-2 md:gap-3 px-4 py-3 md:px-8 md:py-4 whitespace-nowrap hover:bg-gray-50 rounded-full transition-colors group">
+                <svg className="w-5 h-5 md:w-6 md:h-6 text-emerald-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+                <span className="font-medium text-sm md:text-lg">Seyahat ayı</span>
+                <svg className="w-4 h-4 md:w-5 md:h-5 text-gray-400 group-hover:text-emerald-500 transition-colors flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
 
-            {/* Seyahat süresi Filter */}
-            <button className="flex items-center gap-3 px-8 py-4 hover:bg-gray-50 rounded-full transition-colors group">
-              <svg className="w-6 h-6 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              <span className="font-medium text-lg">Seyahat süresi</span>
-              <svg className="w-5 h-5 text-gray-400 group-hover:text-emerald-500 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-              </svg>
-            </button>
+              {/* Seyahat süresi Filter */}
+              <button className="flex items-center gap-2 md:gap-3 px-4 py-3 md:px-8 md:py-4 whitespace-nowrap hover:bg-gray-50 rounded-full transition-colors group">
+                <svg className="w-5 h-5 md:w-6 md:h-6 text-emerald-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <span className="font-medium text-sm md:text-lg">Seyahat süresi</span>
+                <svg className="w-4 h-4 md:w-5 md:h-5 text-gray-400 group-hover:text-emerald-500 transition-colors flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+            </div>
           </div>
         </div>
       </section>
@@ -228,7 +247,9 @@ export default async function ToursPage() {
                     <div className="flex items-center justify-between">
                       <div>
                         <span className="block text-sm text-gray-500">İtibaren</span>
-                        <span className="text-xl font-semibold">{tour.base_price}-$</span>
+                        <span className="text-xl font-semibold">
+                          {formatPrice(tour.base_price, tour.base_price_currency)}
+                        </span>
                       </div>
                       <div className="inline-flex items-center gap-2 text-emerald-600 font-medium group">
                         Bu yolculuğu keşfedin

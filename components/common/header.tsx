@@ -67,7 +67,7 @@ export default function Header() {
   const [logoSettings, setLogoSettings] = useState<LogoSettings | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
-  const [isDesktopView, setIsDesktopView] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
 
   // Destinasyonları ve bölge görsellerini çek
   useEffect(() => {
@@ -156,22 +156,18 @@ export default function Header() {
     fetchLogoSettings();
   }, []);
 
-  // Update the resize handler to set the view state
+  // Component mount kontrolü
   useEffect(() => {
-    const handleResize = () => {
-      // Use a larger breakpoint (1024px) to account for landscape mode on tablets
-      setIsDesktopView(window.innerWidth >= 1024);
-      if (window.innerWidth >= 768) {
-        setMobileMenuOpen(false);
-      }
+    setIsMounted(true);
+    return () => {
+      setMobileMenuOpen(false);
     };
-
-    // Initial check
-    handleResize();
-    
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
   }, []);
+
+  // Hydration sorunlarını önlemek için
+  if (!isMounted) {
+    return null;
+  }
 
   // Toggle dropdown in mobile view
   const toggleDropdown = (dropdown: string) => {
@@ -179,10 +175,10 @@ export default function Header() {
   };
 
   return (
-    <header className="relative z-50 w-full">
-      {/* Conditional rendering based on viewport size */}
-      {isDesktopView ? (
-        // Desktop Header
+    <>
+      {/* Her ikisi de aynı anda render ediliyor, CSS ile kontrol ediliyor */}
+      {/* DESKTOP HEADER */}
+      <header className="desktop-header fixed top-0 left-0 right-0 z-[100] bg-transparent pointer-events-auto">
         <div className="max-w-[1920px] mx-auto px-4 py-6">
           <div className="flex items-center justify-between">
             {/* Logo */}
@@ -355,7 +351,7 @@ export default function Header() {
               </ul>
             </nav>
 
-            {/* Sağ Taraf Butonları */}
+            {/* Desktop Right Buttons */}
             <div className="flex items-center gap-6">
               {/* Acenta Girişi Butonu */}
               <Link
@@ -381,185 +377,211 @@ export default function Header() {
             </div>
           </div>
         </div>
-      ) : (
-        // Mobile Header
-        <>
-          {/* Fixed Logo */}
-          <div className="fixed top-6 left-4 z-50">
-            <Link href="/" className="shrink-0">
-              <Image
-                src={logoSettings ? getStorageUrl(logoSettings.logo_path) : '/images/logo.png'}
-                alt="İnci DMC"
-                width={120}
-                height={40}
-                className="h-10 w-auto"
-                priority
-              />
-            </Link>
-          </div>
+      </header>
+
+      {/* MOBILE HEADER */}
+      <header className="mobile-header fixed top-0 left-0 right-0 z-[101] bg-transparent pointer-events-auto">
+        <div className="p-4 flex items-center justify-between">
+          {/* Mobile Logo */}
+          <Link href="/" className="z-50">
+            <Image
+              src={logoSettings ? getStorageUrl(logoSettings.logo_path) : '/images/logo.png'}
+              alt="İnci DMC"
+              width={100}
+              height={35}
+              className="h-8 w-auto"
+              priority
+            />
+          </Link>
 
           {/* Mobile Menu Button */}
           <button 
-            className="fixed top-6 right-4 z-50 text-white"
+            className="z-50 text-white p-2"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           >
             {mobileMenuOpen ? (
-              // X icon for close
-              <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
               </svg>
             ) : (
-              // Hamburger icon
-              <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
               </svg>
             )}
           </button>
+        </div>
 
-          {/* Mobile Menu Overlay */}
-          <div className={`fixed inset-0 bg-[#1A2A1A] z-40 transition-all duration-300 ${
-            mobileMenuOpen ? 'opacity-100 visible' : 'opacity-0 invisible'
-          }`}>
-            <div className="flex flex-col h-full pt-24 px-6 overflow-y-auto">
-              <nav className="flex-1">
-                <ul className="space-y-6">
-                  <li>
-                    <Link 
-                      href="/tours" 
-                      className="text-white text-2xl font-semibold block py-2"
-                      onClick={() => setMobileMenuOpen(false)}
-                    >
-                      Tüm Turlar
-                    </Link>
-                  </li>
-                  
-                  {/* Destinasyonlar Dropdown */}
-                  <li>
-                    <button 
-                      className="flex items-center justify-between w-full text-white text-2xl font-semibold py-2"
-                      onClick={() => toggleDropdown('destinations')}
-                    >
-                      <span>Destinasyonlar</span>
-                      <svg 
-                        className={`w-6 h-6 transition-transform duration-300 ${activeDropdown === 'destinations' ? 'rotate-180' : ''}`} 
-                        fill="none" 
-                        stroke="currentColor" 
-                        viewBox="0 0 24 24"
-                      >
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
-                      </svg>
-                    </button>
-                    
-                    {/* Dropdown Content */}
-                    <div className={`mt-2 space-y-4 pl-4 ${activeDropdown === 'destinations' ? 'block' : 'hidden'}`}>
-                      {Object.entries(destinations).map(([region, tours]) => (
-                        <div key={region} className="mb-4">
-                          <h4 className="text-emerald-400 text-xl font-semibold mb-2">{region}</h4>
-                          <ul className="space-y-2 pl-2">
-                            {tours.map((tour) => (
-                              <li key={tour.id}>
-                                <Link 
-                                  href={`/tours/${tour.slug}`}
-                                  className="text-white/80 hover:text-white block py-1"
-                                  onClick={() => setMobileMenuOpen(false)}
-                                >
-                                  {tour.title}
-                                </Link>
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                      ))}
-                    </div>
-                  </li>
-
-                  {/* Gezi türü Dropdown */}
-                  <li>
-                    <button 
-                      className="flex items-center justify-between w-full text-white text-2xl font-semibold py-2"
-                      onClick={() => toggleDropdown('tourTypes')}
-                    >
-                      <span>Gezi türü</span>
-                      <svg 
-                        className={`w-6 h-6 transition-transform duration-300 ${activeDropdown === 'tourTypes' ? 'rotate-180' : ''}`} 
-                        fill="none" 
-                        stroke="currentColor" 
-                        viewBox="0 0 24 24"
-                      >
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
-                      </svg>
-                    </button>
-                    
-                    {/* Dropdown Content */}
-                    <div className={`mt-2 grid grid-cols-2 gap-4 pl-4 ${activeDropdown === 'tourTypes' ? 'block' : 'hidden'}`}>
-                      {tourTypes.map((type) => (
-                        <Link
-                          key={type.type}
-                          href={`/tourtype?type=${type.type}`}
-                          className="flex flex-col items-center p-4 bg-white/10 rounded-lg"
-                          onClick={() => setMobileMenuOpen(false)}
-                        >
-                          <div 
-                            className="text-emerald-400 mb-2"
-                            dangerouslySetInnerHTML={{ 
-                              __html: type.type_icon_svg.replace(/script/gi, '')
-                            }}
-                          />
-                          <span className="text-white text-center">{type.header_title}</span>
-                        </Link>
-                      ))}
-                    </div>
-                  </li>
-
-                  <li>
-                    <Link 
-                      href="/opportunity" 
-                      className="text-white text-2xl font-semibold block py-2"
-                      onClick={() => setMobileMenuOpen(false)}
-                    >
-                      Fırsatlar
-                    </Link>
-                  </li>
-
-                  <li>
-                    <Link 
-                      href="/blog" 
-                      className="text-white text-2xl font-semibold block py-2"
-                      onClick={() => setMobileMenuOpen(false)}
-                    >
-                      Bloglar
-                    </Link>
-                  </li>
-                </ul>
-              </nav>
-              
-              {/* Mobile Menu Footer */}
-              <div className="py-8 border-t border-white/20 mt-8">
-                <Link
-                  href="/acenta-giris"
-                  className="flex items-center justify-center gap-3 px-6 py-4 bg-emerald-500 text-white rounded-full w-full"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  <span className="text-lg font-semibold">Acenta Girişi</span>
-                  <svg 
-                    className="w-5 h-5" 
-                    fill="none" 
-                    stroke="currentColor" 
-                    viewBox="0 0 24 24"
+        {/* Mobile Menu Overlay */}
+        <div 
+          className={`fixed inset-0 bg-[#1A2A1A] z-40 ${mobileMenuOpen ? 'visible' : 'invisible'}`}
+          style={{
+            transform: mobileMenuOpen ? 'translateX(0)' : 'translateX(100%)',
+            transition: 'transform 0.3s ease-in-out, visibility 0.3s ease-in-out'
+          }}
+        >
+          <div className="flex flex-col h-full pt-20 px-6 overflow-y-auto">
+            <nav className="flex-1">
+              <ul className="space-y-6">
+                <li>
+                  <Link 
+                    href="/tours" 
+                    className="text-white text-2xl font-semibold block py-2"
+                    onClick={() => setMobileMenuOpen(false)}
                   >
-                    <path 
-                      strokeLinecap="round" 
-                      strokeLinejoin="round" 
-                      strokeWidth={2} 
-                      d="M17 8l4 4m0 0l-4 4m4-4H3" 
-                    />
-                  </svg>
-                </Link>
-              </div>
+                    Tüm Turlar
+                  </Link>
+                </li>
+                
+                {/* Destinasyonlar Dropdown */}
+                <li>
+                  <button 
+                    className="flex items-center justify-between w-full text-white text-2xl font-semibold py-2"
+                    onClick={() => toggleDropdown('destinations')}
+                  >
+                    <span>Destinasyonlar</span>
+                    <svg 
+                      className={`w-6 h-6 transition-transform duration-300 ${activeDropdown === 'destinations' ? 'rotate-180' : ''}`} 
+                      fill="none" 
+                      stroke="currentColor" 
+                      viewBox="0 0 24 24"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </button>
+                  
+                  {/* Dropdown Content */}
+                  <div className={`mt-2 space-y-4 pl-4 ${activeDropdown === 'destinations' ? 'block' : 'hidden'}`}>
+                    {Object.entries(destinations).map(([region, tours]) => (
+                      <div key={region} className="mb-4">
+                        <h4 className="text-emerald-400 text-xl font-semibold mb-2">{region}</h4>
+                        <ul className="space-y-2 pl-2">
+                          {tours.map((tour) => (
+                            <li key={tour.id}>
+                              <Link 
+                                href={`/tours/${tour.slug}`}
+                                className="text-white/80 hover:text-white block py-1"
+                                onClick={() => setMobileMenuOpen(false)}
+                              >
+                                {tour.title}
+                              </Link>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    ))}
+                  </div>
+                </li>
+
+                {/* Gezi türü Dropdown */}
+                <li>
+                  <button 
+                    className="flex items-center justify-between w-full text-white text-2xl font-semibold py-2"
+                    onClick={() => toggleDropdown('tourTypes')}
+                  >
+                    <span>Gezi türü</span>
+                    <svg 
+                      className={`w-6 h-6 transition-transform duration-300 ${activeDropdown === 'tourTypes' ? 'rotate-180' : ''}`} 
+                      fill="none" 
+                      stroke="currentColor" 
+                      viewBox="0 0 24 24"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </button>
+                  
+                  {/* Dropdown Content */}
+                  <div className={`mt-2 grid grid-cols-2 gap-4 pl-4 ${activeDropdown === 'tourTypes' ? 'block' : 'hidden'}`}>
+                    {tourTypes.map((type) => (
+                      <Link
+                        key={type.type}
+                        href={`/tourtype?type=${type.type}`}
+                        className="flex flex-col items-center p-4 bg-white/10 rounded-lg"
+                        onClick={() => setMobileMenuOpen(false)}
+                      >
+                        <div 
+                          className="text-emerald-400 mb-2"
+                          dangerouslySetInnerHTML={{ 
+                            __html: type.type_icon_svg.replace(/script/gi, '')
+                          }}
+                        />
+                        <span className="text-white text-center">{type.header_title}</span>
+                      </Link>
+                    ))}
+                  </div>
+                </li>
+
+                <li>
+                  <Link 
+                    href="/opportunity" 
+                    className="text-white text-2xl font-semibold block py-2"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    Fırsatlar
+                  </Link>
+                </li>
+
+                <li>
+                  <Link 
+                    href="/blog" 
+                    className="text-white text-2xl font-semibold block py-2"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    Bloglar
+                  </Link>
+                </li>
+              </ul>
+            </nav>
+            
+            {/* Mobile Footer */}
+            <div className="py-8 border-t border-white/20 mt-8">
+              <Link
+                href="/acenta-giris"
+                className="flex items-center justify-center gap-3 px-6 py-4 bg-emerald-500 text-white rounded-full w-full"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                <span className="text-lg font-semibold">Acenta Girişi</span>
+                <svg 
+                  className="w-5 h-5" 
+                  fill="none" 
+                  stroke="currentColor" 
+                  viewBox="0 0 24 24"
+                >
+                  <path 
+                    strokeLinecap="round" 
+                    strokeLinejoin="round" 
+                    strokeWidth={2} 
+                    d="M17 8l4 4m0 0l-4 4m4-4H3" 
+                  />
+                </svg>
+              </Link>
             </div>
           </div>
-        </>
-      )}
-    </header>
-  )
+        </div>
+      </header>
+
+      {/* CSS Stilleri */}
+      <style jsx global>{`
+        /* Varsayılan olarak desktop header görünür */
+        .desktop-header {
+          display: block;
+        }
+        
+        /* Varsayılan olarak mobile header gizli */
+        .mobile-header {
+          display: none;
+        }
+        
+        /* Media query ile görünürlüğü kontrol et */
+        @media (max-width: 1023px) {
+          .desktop-header {
+            display: none !important;
+          }
+          
+          .mobile-header {
+            display: block !important;
+          }
+        }
+      `}</style>
+    </>
+  );
 }

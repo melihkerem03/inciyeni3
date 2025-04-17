@@ -56,6 +56,7 @@ interface PopularTour {
     storage_path: string;
     alt_text?: string;
   }>;
+  base_price_currency?: string;
 }
 
 // Tip tanımlamasını ekle
@@ -381,15 +382,13 @@ export default function HomePage() {
         </div>
 
         {/* Header - hidden on mobile, visible on tablet and larger */}
-        <div className="hidden md:block">
-          <Header />
-        </div>
+        <Header />
 
         {/* Content Container */}
-        <div className="relative h-full max-w-7xl mx-auto px-4">
+        <div className="relative h-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Hero Content */}
           <div className="absolute inset-0 flex flex-col justify-center">
-            <div className="max-w-4xl text-white">
+            <div className="max-w-4xl text-white px-4 md:px-0">
               {isLoading ? (
                 <div className="animate-pulse">
                   <div className="h-16 bg-white/20 rounded w-3/4 mb-4"></div>
@@ -414,8 +413,8 @@ export default function HomePage() {
             </div>
           </div>
 
-          {/* Search Card - Compact Premium Design, hidden on mobile */}
-          <div className="absolute top-1/2 right-4 -translate-y-1/2 bg-white/95 backdrop-blur-md rounded-2xl p-6 max-w-sm w-full shadow-2xl lg:right-0 hidden md:block border border-white/20 hover:shadow-emerald-200/20 transition-shadow duration-300">
+          {/* Search Card - Compact Premium Design */}
+          <div className="absolute top-1/2 right-4 -translate-y-1/2 bg-white/95 backdrop-blur-md rounded-2xl p-6 max-w-sm w-full shadow-2xl lg:right-0 border border-white/20 hover:shadow-emerald-200/20 transition-shadow duration-300 search-card z-10">
             <div className="relative z-10">
               {/* Decorative Elements */}
               <div className="absolute -top-3 -left-3 w-16 h-16 bg-emerald-500/20 rounded-full blur-lg"></div>
@@ -586,6 +585,12 @@ export default function HomePage() {
               popularTours.map((tour) => {
                 const heroImage = tour.tour_images?.find(img => img.image_type === 'hero');
                 const imagePath = heroImage?.storage_path || tour.hero_image_path;
+                
+                // Para birimi sembolünü belirle
+                const currencySymbol = tour.base_price_currency === 'USD' ? '$' : 
+                                      tour.base_price_currency === 'EUR' ? '€' : 
+                                      tour.base_price_currency === 'TRY' ? '₺' : 
+                                      '€'; // Varsayılan olarak euro sembolü
 
                 return (
                   <div key={tour.id} className="group relative overflow-hidden rounded-2xl h-[500px] shadow-lg transition-all duration-500 hover:shadow-2xl">
@@ -629,7 +634,9 @@ export default function HomePage() {
                         <div className="flex items-center justify-between pt-5 border-t border-white/10">
                           <div className="flex flex-col">
                             <span className="text-xs text-white/60 uppercase">Başlangıç Fiyatı</span>
-                            <span className="text-2xl font-bold text-emerald-400">{tour.base_price} €</span>
+                            <span className="text-2xl font-bold text-emerald-400">
+                              {Intl.NumberFormat('tr-TR').format(tour.base_price || 0)} {currencySymbol}
+                            </span>
                           </div>
                           
                           <Link 
@@ -1121,6 +1128,24 @@ export default function HomePage() {
 
       {/* Stats Section */}
       <StatsSection />
+
+      {/* CSS Düzeltmeleri */}
+      <style jsx global>{`
+        /* Search card responsive davranışı */
+        @media (max-width: 767px) {
+          .search-card {
+            display: none !important;
+          }
+        }
+        
+        /* Mobil görünümde header'ın her zaman en üstte kalmasını sağla */
+        @media (max-width: 1023px) {
+          .mobile-header {
+            display: block !important;
+            z-index: 9999 !important;
+          }
+        }
+      `}</style>
     </main>
   )
 }

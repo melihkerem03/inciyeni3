@@ -5,12 +5,17 @@ const nextConfig = {
       'golmptyxjzpsbyznhcrj.supabase.co', // Supabase storage domain'i
       // ... diğer domainler
     ],
+    unoptimized: true
   },
   typescript: {
     ignoreBuildErrors: true
   },
   eslint: {
     ignoreDuringBuilds: true
+  },
+  output: 'standalone',
+  experimental: {
+    missingSuspenseWithCSRBailout: false
   }
 }
 

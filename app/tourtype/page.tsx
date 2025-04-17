@@ -188,16 +188,32 @@ export default function TourTypePage() {
         {/* Hero Content */}
         <div className="relative h-full max-w-7xl mx-auto px-4">
           <div className="absolute inset-0 flex flex-col justify-center">
-            <div className="max-w-4xl text-white">
-              <span className="inline-block text-sm font-semibold text-emerald-400 tracking-wider uppercase mb-6">
-                {settings.hero_subtitle}
-              </span>
-              <h1 className="font-butler font-bold text-5xl lg:text-7xl text-white">
-                {settings.hero_title}
-              </h1>
-              <p className="text-xl mt-6 text-white/90 max-w-2xl">
-                {settings.hero_description}
-              </p>
+            <div className="max-w-4xl text-white px-4 md:px-0">
+              {isLoading ? (
+                <div className="animate-pulse">
+                  <div className="h-16 bg-white/20 rounded w-3/4 mb-4"></div>
+                  <div className="h-8 bg-white/20 rounded w-1/2"></div>
+                </div>
+              ) : (
+                <>
+                  <div className="flex items-center gap-4 mb-6">
+                    <div className="w-12 h-12 bg-white/10 rounded-xl p-2.5 text-emerald-400"
+                      dangerouslySetInnerHTML={{ 
+                        __html: settings.type_icon_svg
+                      }}
+                    />
+                    <span className="text-sm font-semibold text-emerald-400 tracking-wider uppercase">
+                      {settings.header_title}
+                    </span>
+                  </div>
+                  <h1 className="font-butler font-bold text-5xl lg:text-7xl text-white">
+                    {settings.hero_title}
+                  </h1>
+                  <p className="text-xl mt-6 text-white/90 max-w-2xl">
+                    {settings.hero_description}
+                  </p>
+                </>
+              )}
             </div>
           </div>
         </div>

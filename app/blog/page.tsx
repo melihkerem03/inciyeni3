@@ -95,7 +95,7 @@ export default function BlogPage() {
         {/* Hero Content */}
         <div className="relative h-full max-w-7xl mx-auto px-4">
           <div className="absolute inset-0 flex flex-col justify-center">
-            <div className="max-w-4xl text-white">
+            <div className="max-w-4xl text-white px-4 md:px-0">
               <span className="inline-block text-sm font-semibold text-emerald-400 tracking-wider uppercase mb-6">
                 BLOG
               </span>
@@ -113,37 +113,39 @@ export default function BlogPage() {
       {/* Filter Section */}
       <section className="relative z-10">
         <div className="max-w-7xl mx-auto px-4">
-          <div className="bg-white rounded-full shadow-xl p-6 flex items-center justify-between gap-6">
-            {/* Kategori Filter */}
-            <button className="flex items-center gap-3 px-8 py-4 hover:bg-gray-50 rounded-full transition-colors group">
-              <svg className="w-6 h-6 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-              </svg>
-              <span className="font-medium text-lg">Kategoriler</span>
-              <svg className="w-5 h-5 text-gray-400 group-hover:text-emerald-500 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-              </svg>
-            </button>
+          {/* Filtreleme barını yatay kaydırılabilir hale getiriyoruz */}
+          <div className="bg-white rounded-2xl md:rounded-full shadow-xl p-2 md:p-6 overflow-x-auto scrollbar-hide">
+            <div className="flex flex-nowrap items-center gap-1 md:gap-6 min-w-max">
+              {/* Kategori Filter */}
+              <button className="flex items-center gap-2 md:gap-3 px-4 py-3 md:px-8 md:py-4 whitespace-nowrap hover:bg-gray-50 rounded-full transition-colors group">
+                <svg className="w-5 h-5 md:w-6 md:h-6 text-emerald-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                </svg>
+                <span className="font-medium text-sm md:text-lg">Kategoriler</span>
+                <svg className="w-4 h-4 md:w-5 md:h-5 text-gray-400 group-hover:text-emerald-500 transition-colors flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
 
-            {/* Tarih Filter */}
-            <button className="flex items-center gap-3 px-8 py-4 hover:bg-gray-50 rounded-full transition-colors group">
-              <svg className="w-6 h-6 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-              </svg>
-              <span className="font-medium text-lg">Tarih</span>
-              <svg className="w-5 h-5 text-gray-400 group-hover:text-emerald-500 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-              </svg>
-            </button>
+              {/* Tarih Filter */}
+              <button className="flex items-center gap-2 md:gap-3 px-4 py-3 md:px-8 md:py-4 whitespace-nowrap hover:bg-gray-50 rounded-full transition-colors group">
+                <svg className="w-5 h-5 md:w-6 md:h-6 text-emerald-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+                <span className="font-medium text-sm md:text-lg">Tarih</span>
+                <svg className="w-4 h-4 md:w-5 md:h-5 text-gray-400 group-hover:text-emerald-500 transition-colors flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
 
-            {/* Yazar Filter */}
-            <button className="flex items-center gap-3 px-8 py-4 hover:bg-gray-50 rounded-full transition-colors group">
-              
-              <span className="font-medium text-lg">Yazar</span>
-              <svg className="w-5 h-5 text-gray-400 group-hover:text-emerald-500 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-              </svg>
-            </button>
+              {/* Yazar Filter */}
+              <button className="flex items-center gap-2 md:gap-3 px-4 py-3 md:px-8 md:py-4 whitespace-nowrap hover:bg-gray-50 rounded-full transition-colors group">
+                <span className="font-medium text-sm md:text-lg">Yazar</span>
+                <svg className="w-4 h-4 md:w-5 md:h-5 text-gray-400 group-hover:text-emerald-500 transition-colors flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+            </div>
           </div>
         </div>
       </section>
