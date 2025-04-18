@@ -1,0 +1,12 @@
+/* Yatay scrolling'i engellemek için */
+html, body {
+  overflow-x: hidden;
+  width: 100%;
+  position: relative;
+}
+
+/* Eğer position: relative sorun yaratırsa */
+body {
+  overflow-x: hidden;
+  max-width: 100%;
+} 

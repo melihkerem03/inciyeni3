@@ -2,6 +2,9 @@ import Image from 'next/image'
 import Header from '@/components/common/header'
 import Link from 'next/link'
 import { createClient } from '@supabase/supabase-js'
+import dynamic from 'next/dynamic'
+import { useRouter } from 'next/navigation'
+import FilterSection from '@/components/FilterSection'
 
 // Sayfanın her 0 saniyede bir yenilenmesini sağlar
 export const revalidate = 0;
@@ -24,13 +27,50 @@ const getStorageUrl = (path: string | null | undefined): string => {
     .data.publicUrl;
 };
 
-async function getToursData() {
-  const { data: tours, error } = await supabase
+async function getToursData(searchParams: any) {
+  let query = supabase
     .from('tours')
     .select(`
       *,
       tour_images (storage_path, alt_text, image_type)
     `)
+  
+  // Fiyat filtresi
+  if (searchParams?.minPrice) {
+    query = query.gte('base_price', parseInt(searchParams.minPrice))
+  }
+  
+  if (searchParams?.maxPrice) {
+    query = query.lte('base_price', parseInt(searchParams.maxPrice))
+  }
+  
+  // Para birimi filtresi
+  if (searchParams?.currency) {
+    query = query.eq('base_price_currency', searchParams.currency)
+  }
+  
+  // Tarih filtreleri
+  if (searchParams?.startDate) {
+    // Seçilen ay ve yılın ilk günü (YYYY-MM-01)
+    const [startYear, startMonth] = searchParams.startDate.split('-')
+    const startDateStr = `${startYear}-${startMonth}-01`
+    
+    // Turların başlangıç tarihi seçilen tarihten sonra olmalı
+    // VEYA turların bitiş tarihi seçilen tarihten sonra olmalı
+    query = query.or(`base_date_start.gte.${startDateStr},base_date_end.gte.${startDateStr}`)
+  }
+  
+  if (searchParams?.endDate) {
+    // Seçilen ay ve yılın son günü
+    const [endYear, endMonth] = searchParams.endDate.split('-')
+    const lastDay = new Date(parseInt(endYear), parseInt(endMonth), 0).getDate()
+    const endDateStr = `${endYear}-${endMonth}-${lastDay}`
+    
+    // Turların başlangıç tarihi seçilen son tarihten önce olmalı
+    query = query.lte('base_date_start', endDateStr)
+  }
+  
+  const { data: tours, error } = await query
 
   if (error) {
     console.error('Error fetching tours:', error)
@@ -56,8 +96,21 @@ const formatPrice = (price: number | null | undefined, currency: string | null |
   return `${Intl.NumberFormat('tr-TR').format(safePrice)} ${symbol}`;
 };
 
-export default async function ToursPage() {
-  const tours = await getToursData()
+// Client componentlerini dynamic import ile yükle
+const BudgetFilter = dynamic(() => import('@/components/filters/BudgetFilter'), {
+  ssr: false
+})
+const DateFilter = dynamic(() => import('@/components/filters/DateFilter'), {
+  ssr: false
+})
+
+export default async function ToursPage({
+  searchParams
+}: {
+  searchParams: { [key: string]: string | string[] | undefined }
+}) {
+  const tours = await getToursData(searchParams)
+  const totalTours = tours.length
 
   return (
     <main className="relative bg-[#f1dbc4]">
@@ -121,70 +174,8 @@ export default async function ToursPage() {
         </div>
       </section>
 
-      {/* Filter Section */}
-      <section className="relative z-10">
-        <div className="max-w-7xl mx-auto px-4">
-          {/* Filtreleme barını yatay kaydırılabilir hale getiriyoruz */}
-          <div className="bg-white rounded-2xl md:rounded-full shadow-md p-2 md:p-6 overflow-x-auto scrollbar-hide">
-            <div className="flex flex-nowrap items-center gap-1 md:gap-6 min-w-max">
-              {/* Hedefler Filter */}
-              <button className="flex items-center gap-2 md:gap-3 px-4 py-3 md:px-8 md:py-4 whitespace-nowrap hover:bg-gray-50 rounded-full transition-colors group">
-                <svg className="w-5 h-5 md:w-6 md:h-6 text-emerald-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064" />
-                </svg>
-                <span className="font-medium text-sm md:text-lg">Hedefler</span>
-                <svg className="w-4 h-4 md:w-5 md:h-5 text-gray-400 group-hover:text-emerald-500 transition-colors flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
-              </button>
-
-              {/* Gezi türü Filter */}
-              <button className="flex items-center gap-2 md:gap-3 px-4 py-3 md:px-8 md:py-4 whitespace-nowrap hover:bg-gray-50 rounded-full transition-colors group">
-                <svg className="w-5 h-5 md:w-6 md:h-6 text-emerald-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                </svg>
-                <span className="font-medium text-sm md:text-lg">Gezi türü</span>
-                <svg className="w-4 h-4 md:w-5 md:h-5 text-gray-400 group-hover:text-emerald-500 transition-colors flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
-              </button>
-
-              {/* Bütçe Filter */}
-              <button className="flex items-center gap-2 md:gap-3 px-4 py-3 md:px-8 md:py-4 whitespace-nowrap hover:bg-gray-50 rounded-full transition-colors group">
-                <svg className="w-5 h-5 md:w-6 md:h-6 text-emerald-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                <span className="font-medium text-sm md:text-lg">Bütçe</span>
-                <svg className="w-4 h-4 md:w-5 md:h-5 text-gray-400 group-hover:text-emerald-500 transition-colors flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
-              </button>
-
-              {/* Seyahat ayı Filter */}
-              <button className="flex items-center gap-2 md:gap-3 px-4 py-3 md:px-8 md:py-4 whitespace-nowrap hover:bg-gray-50 rounded-full transition-colors group">
-                <svg className="w-5 h-5 md:w-6 md:h-6 text-emerald-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                </svg>
-                <span className="font-medium text-sm md:text-lg">Seyahat ayı</span>
-                <svg className="w-4 h-4 md:w-5 md:h-5 text-gray-400 group-hover:text-emerald-500 transition-colors flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
-              </button>
-
-              {/* Seyahat süresi Filter */}
-              <button className="flex items-center gap-2 md:gap-3 px-4 py-3 md:px-8 md:py-4 whitespace-nowrap hover:bg-gray-50 rounded-full transition-colors group">
-                <svg className="w-5 h-5 md:w-6 md:h-6 text-emerald-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                <span className="font-medium text-sm md:text-lg">Seyahat süresi</span>
-                <svg className="w-4 h-4 md:w-5 md:h-5 text-gray-400 group-hover:text-emerald-500 transition-colors flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
-              </button>
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* Client Component olarak FilterSection */}
+      <FilterSection totalTours={totalTours} />
 
       {/* Tours Grid Section */}
       <section className="mt-12 pb-24">

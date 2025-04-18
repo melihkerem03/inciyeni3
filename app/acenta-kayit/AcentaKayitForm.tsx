@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { supabase } from '@/lib/supabase'
 
 type FormData = {
   acenteAdi: string
@@ -38,7 +39,8 @@ export default function AcentaKayitForm() {
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [step, setStep] = useState(1) // 1: Acente Bilgileri, 2: Yönetici Bilgileri
+  const [step, setStep] = useState(1)
+  const [debugInfo, setDebugInfo] = useState<string | null>(null)
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target
@@ -59,6 +61,7 @@ export default function AcentaKayitForm() {
     e.preventDefault()
     setLoading(true)
     setError(null)
+    setDebugInfo(null)
     
     try {
       // Şifre kontrolü
@@ -66,19 +69,49 @@ export default function AcentaKayitForm() {
         throw new Error('Şifreler eşleşmiyor')
       }
       
-      // Burada form verilerini API'ye gönderme işlemi yapılabilir
-      // Örnek: await fetch('/api/acenta-kayit', { method: 'POST', body: JSON.stringify(formData) })
+      // Doğrudan acenta verilerini tabloya ekle (auth kullanmadan)
+      console.log('Acenta bilgileri kaydediliyor...')
+      setDebugInfo('Acenta bilgileri kaydediliyor...')
       
-      // Simüle edilmiş başarılı işlem
-      await new Promise(resolve => setTimeout(resolve, 1500))
+      const { data: acentaData, error: acentaError } = await supabase
+        .from('acentalar')
+        .insert([
+          {
+            acenta_ismi: formData.acenteAdi,
+            telefon: formData.telefon,
+            mobil_telefon: formData.mobil,
+            ulke: formData.ulke,
+            sehir: formData.sehir,
+            adres: formData.adres,
+            cinsiyet: formData.cinsiyet,
+            isim: formData.isim,
+            soyisim: formData.soyisim,
+            email: formData.email,
+            password_hash: formData.password
+          }
+        ])
+        .select()
       
+      if (acentaError) {
+        console.error('Acenta kayıt hatası:', acentaError)
+        throw new Error(`Acenta bilgileri kaydedilemedi: ${acentaError.message}`)
+      }
+      
+      console.log('Acenta kaydı başarılı:', acentaData)
+      setDebugInfo(prev => prev + '\nAcenta bilgileri başarıyla kaydedildi')
+      
+      // Başarılı mesajı göster
       setSuccess(true)
-      // Başarılı mesajı gösterdikten sonra giriş sayfasına yönlendir
+      
+      // Başarılı mesajı gösterdikten sonra yönlendir
       setTimeout(() => {
         router.push('/acenta-giris')
       }, 3000)
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Kayıt sırasında bir hata oluştu. Lütfen daha sonra tekrar deneyin.')
+      const errorMessage = err instanceof Error ? err.message : 'Kayıt sırasında bilinmeyen bir hata oluştu'
+      console.error('Kayıt hatası:', err)
+      setError(errorMessage)
+      setDebugInfo(prev => prev + '\n❌ HATA: ' + errorMessage)
     } finally {
       setLoading(false)
     }

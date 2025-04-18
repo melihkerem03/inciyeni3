@@ -1,9 +1,8 @@
 {
   "/not-found": "app/not-found.js",
-  "/tours/[slug]/page": "app/tours/[slug]/page.js",
-  "/blog/page": "app/blog/page.js",
-  "/tours/page": "app/tours/page.js",
   "/page": "app/page.js",
-  "/opportunity/page": "app/opportunity/page.js",
-  "/about/page": "app/about/page.js"
+  "/tours/page": "app/tours/page.js",
+  "/acenta-giris/page": "app/acenta-giris/page.js",
+  "/acenta-kayit/page": "app/acenta-kayit/page.js",
+  "/tours/[slug]/page": "app/tours/[slug]/page.js"
 }

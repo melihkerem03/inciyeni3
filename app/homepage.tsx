@@ -139,6 +139,21 @@ export default function HomePage() {
   const [activeLocation, setActiveLocation] = useState<string | null>(null);
   const [tourTypes, setTourTypes] = useState<TourType[]>([]);
   const [isTourTypesLoading, setIsTourTypesLoading] = useState(true);
+  const [isMobileView, setIsMobileView] = useState(false);
+
+  // Mobil görünüm state'i
+  useEffect(() => {
+    // Sayfa yüklendiğinde ve pencere boyutu değiştiğinde kontrol et
+    const checkDevice = () => {
+      const width = window.innerWidth
+      const isMobile = width <= 768 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
+      setIsMobileView(isMobile)
+    }
+    
+    checkDevice()
+    window.addEventListener('resize', checkDevice)
+    return () => window.removeEventListener('resize', checkDevice)
+  }, [])
 
   // Hero verilerini ve görsel URL'ini çek
   useEffect(() => {
@@ -363,9 +378,9 @@ export default function HomePage() {
   }, []);
 
   return (
-    <main className="relative">
+    <main className="overflow-x-hidden">
       {/* Hero Section with Background */}
-      <section className="relative h-[80vh]">
+      <section className="relative h-[80vh] overflow-hidden">
         {/* Background Image */}
         <div className="absolute inset-0">
           <Image
@@ -508,7 +523,7 @@ export default function HomePage() {
       <div className="relative h-24 bg-[#1A2A1A]" />
 
       {/* Featured Tours Section */}
-      <section className="relative bg-[#f1dbc4] pt-18 pb-[150px] min-h-[1600px]">
+      <section className={`relative bg-[#f1dbc4] pt-18 pb-[150px] ${isMobileView ? 'min-h-[800px]' : 'min-h-[1600px]'} overflow-hidden`}>
         {/* Background Image */}
         <div className="absolute inset-0 w-full" style={{ backgroundColor: '#f1dbc4' }}>
           <div className="relative w-full h-full" style={{ minHeight: '1600px' }}>
@@ -800,7 +815,7 @@ export default function HomePage() {
                     </svg>
                   </div>
                   <div>
-                    <h4 className="text-[#1A2A1A] font-bold">%100 Memnuniyet Garantisi</h4>
+                    <h4 className="text-[#1A2A1A] font-bold">Memnuniyet Garantisi</h4>
                     <p className="text-[#1A2A1A]/60 text-sm">En iyi hizmeti sunmak için buradayız</p>
                   </div>
                 </div>
@@ -832,7 +847,7 @@ export default function HomePage() {
               {/* Ana Görsel */}
               <div className="rounded-[30px] overflow-hidden h-full relative shadow-2xl">
                 <Image
-                  src="/images/blog/antelope-canyon.jpg"
+                  src="/images/blog/japonya.jpg"
                   alt="Antelope Canyon"
                   fill
                   className="object-cover rounded-[30px] transform hover:scale-105 transition-transform duration-700"
@@ -845,7 +860,7 @@ export default function HomePage() {
               <div className="absolute top-1/2 -translate-y-1/2 right-0 w-[60%] translate-x-[15%] hidden md:block">
                 <div className="rounded-[30px] overflow-hidden aspect-[3/4] shadow-2xl relative ring-4 ring-white/10 backdrop-blur">
                   <Image
-                    src="/images/blog/golden-gate.jpg"
+                    src="/images/blog/japonya2.jpg"
                     alt="Golden Gate Bridge"
                     fill
                     className="object-cover rounded-[30px] transform hover:scale-105 transition-transform duration-700"
@@ -863,14 +878,14 @@ export default function HomePage() {
                     SEYAHAT REHBERİ
                   </span>
                   <h3 className="font-butler font-bold text-2xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-white leading-tight">
-                  Kapadokya'nın Masalsı Dünyasına Yolculuk
+                  Japonya'nın Zamansız Güzelliğini Keşfet
                     
-                    <span className="block mt-2 text-emerald-400">önemli ipuçları</span>
+                    <span className="block mt-2 text-emerald-400">bilmeniz gerekenler</span>
                   </h3>
                 </div>
 
                 <p className="text-white/90 text-lg leading-relaxed">
-                Peri bacaları ve rengarenk balonlarıyla Kapadokya'nın büyülü atmosferinde unutulmaz bir maceraya çıkın!
+                Sakura ağaçlarıyla bezeli sokaklardan geleneksel tapınaklara, Japonya'nın hem modern hem tarihî yüzünü keşfedeceğiniz unutulmaz bir yolculuğa hazır olun!
                 </p>
 
                 <Link

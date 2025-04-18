@@ -69,6 +69,9 @@ export default function Header() {
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [isMounted, setIsMounted] = useState(false);
 
+  // Gezi türü menüsünü gösterip göstermemeyi kontrol eder
+  const showTourTypeMenu = false; // Dropdown'u gizlemek için false olarak ayarlandı
+
   // Destinasyonları ve bölge görsellerini çek
   useEffect(() => {
     async function fetchData() {
@@ -278,10 +281,12 @@ export default function Header() {
                       ) : (
                         <div className="w-full h-full flex items-center justify-center p-8">
                           <Image
-                            src="/images/dünya.jpg"
+                            src="/images/world-map.jpg"
                             alt="World Map"
                             fill
                             className="object-cover transition-all duration-500 hover:scale-110"
+                            sizes="(max-width: 1200px) 33vw, 400px"
+                            priority
                           />
                         </div>
                       )}
@@ -289,45 +294,47 @@ export default function Header() {
                   </div>
                 </li>
 
-                {/* Gezi türü Dropdown */}
-                <li className="relative group">
-                  <button className="flex items-center gap-2 text-white font-semibold text-lg hover:text-emerald-400 transition-colors">
-                    <span>Gezi türü</span>
-                    <svg className="w-4 h-4 transition-transform duration-300 group-hover:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
-                    </svg>
-                  </button>
+                {/* Gezi türü Dropdown - gizlendi */}
+                {showTourTypeMenu && (
+                  <li className="relative group">
+                    <button className="flex items-center gap-2 text-white font-semibold text-lg hover:text-emerald-400 transition-colors">
+                      <span>Gezi türü</span>
+                      <svg className="w-4 h-4 transition-transform duration-300 group-hover:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </button>
 
-                  {/* Invisible bridge */}
-                  <div className="absolute h-10 w-full -bottom-10 invisible"></div>
+                    {/* Invisible bridge */}
+                    <div className="absolute h-10 w-full -bottom-10 invisible"></div>
 
-                  {/* Dropdown Menu */}
-                  <div className="fixed invisible group-hover:visible opacity-0 group-hover:opacity-100 transition-all duration-300 left-1/2 transform -translate-x-1/2 mt-2 bg-white shadow-lg rounded-lg w-[75vw]" style={{ top: "80px" }}>
-                    <div className="p-8">
-                      <div className="grid grid-cols-7 gap-4">
-                        {tourTypes.map((type) => (
-                          <Link
-                            key={type.type}
-                            href={`/tourtype?type=${type.type}`}
-                            className="flex flex-col items-center gap-4 p-6 rounded-xl hover:bg-gray-50 transition-colors group"
-                          >
-                            {/* SVG Icon */}
-                            <div 
-                              className="text-gray-600 group-hover:text-emerald-500 transition-colors"
-                              dangerouslySetInnerHTML={{ 
-                                __html: type.type_icon_svg.replace(/script/gi, '')
-                              }}
-                            />
-                            {/* Title */}
-                            <span className="text-sm font-medium text-gray-700 group-hover:text-emerald-500 text-center transition-colors">
-                              {type.header_title}
-                            </span>
-                          </Link>
-                        ))}
+                    {/* Dropdown Menu */}
+                    <div className="fixed invisible group-hover:visible opacity-0 group-hover:opacity-100 transition-all duration-300 left-1/2 transform -translate-x-1/2 mt-2 bg-white shadow-lg rounded-lg w-[75vw]" style={{ top: "80px" }}>
+                      <div className="p-8">
+                        <div className="grid grid-cols-7 gap-4">
+                          {tourTypes.map((type) => (
+                            <Link
+                              key={type.type}
+                              href={`/tourtype?type=${type.type}`}
+                              className="flex flex-col items-center gap-4 p-6 rounded-xl hover:bg-gray-50 transition-colors group"
+                            >
+                              {/* SVG Icon */}
+                              <div 
+                                className="text-gray-600 group-hover:text-emerald-500 transition-colors"
+                                dangerouslySetInnerHTML={{ 
+                                  __html: type.type_icon_svg.replace(/script/gi, '')
+                                }}
+                              />
+                              {/* Title */}
+                              <span className="text-sm font-medium text-gray-700 group-hover:text-emerald-500 text-center transition-colors">
+                                {type.header_title}
+                              </span>
+                            </Link>
+                          ))}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </li>
+                  </li>
+                )}
 
                 {/* Fırsatlar */}
                 <li>
@@ -472,43 +479,45 @@ export default function Header() {
                   </div>
                 </li>
 
-                {/* Gezi türü Dropdown */}
-                <li>
-                  <button 
-                    className="flex items-center justify-between w-full text-white text-2xl font-semibold py-2"
-                    onClick={() => toggleDropdown('tourTypes')}
-                  >
-                    <span>Gezi türü</span>
-                    <svg 
-                      className={`w-6 h-6 transition-transform duration-300 ${activeDropdown === 'tourTypes' ? 'rotate-180' : ''}`} 
-                      fill="none" 
-                      stroke="currentColor" 
-                      viewBox="0 0 24 24"
+                {/* Gezi türü Dropdown - gizlendi */}
+                {showTourTypeMenu && (
+                  <li>
+                    <button 
+                      className="flex items-center justify-between w-full text-white text-2xl font-semibold py-2"
+                      onClick={() => toggleDropdown('tourTypes')}
                     >
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
-                    </svg>
-                  </button>
-                  
-                  {/* Dropdown Content */}
-                  <div className={`mt-2 grid grid-cols-2 gap-4 pl-4 ${activeDropdown === 'tourTypes' ? 'block' : 'hidden'}`}>
-                    {tourTypes.map((type) => (
-                      <Link
-                        key={type.type}
-                        href={`/tourtype?type=${type.type}`}
-                        className="flex flex-col items-center p-4 bg-white/10 rounded-lg"
-                        onClick={() => setMobileMenuOpen(false)}
+                      <span>Gezi türü</span>
+                      <svg 
+                        className={`w-6 h-6 transition-transform duration-300 ${activeDropdown === 'tourTypes' ? 'rotate-180' : ''}`} 
+                        fill="none" 
+                        stroke="currentColor" 
+                        viewBox="0 0 24 24"
                       >
-                        <div 
-                          className="text-emerald-400 mb-2"
-                          dangerouslySetInnerHTML={{ 
-                            __html: type.type_icon_svg.replace(/script/gi, '')
-                          }}
-                        />
-                        <span className="text-white text-center">{type.header_title}</span>
-                      </Link>
-                    ))}
-                  </div>
-                </li>
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </button>
+                    
+                    {/* Dropdown Content */}
+                    <div className={`mt-2 grid grid-cols-2 gap-4 pl-4 ${activeDropdown === 'tourTypes' ? 'block' : 'hidden'}`}>
+                      {tourTypes.map((type) => (
+                        <Link
+                          key={type.type}
+                          href={`/tourtype?type=${type.type}`}
+                          className="flex flex-col items-center p-4 bg-white/10 rounded-lg"
+                          onClick={() => setMobileMenuOpen(false)}
+                        >
+                          <div 
+                            className="text-emerald-400 mb-2"
+                            dangerouslySetInnerHTML={{ 
+                              __html: type.type_icon_svg.replace(/script/gi, '')
+                            }}
+                          />
+                          <span className="text-white text-center">{type.header_title}</span>
+                        </Link>
+                      ))}
+                    </div>
+                  </li>
+                )}
 
                 <li>
                   <Link 

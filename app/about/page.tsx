@@ -57,15 +57,17 @@ export default function AboutPage() {
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
             <div className="prose prose-lg mx-auto">
-              <h2 className="text-3xl font-bold text-gray-800 mb-6">İnci DMC Turizm</h2>
+              <h2 className="text-3xl font-bold text-gray-800 mb-6">Hakkımızda</h2>
               <p className="text-gray-600 mb-4">
-                İnci DMC Turizm, 2010 yılından bu yana turizm sektöründe faaliyet gösteren, deneyimli ve profesyonel kadrosuyla müşterilerine en iyi hizmeti sunmayı hedefleyen bir seyahat acentesidir.
+              İNCİ DMC TURİZM seyahat acentelerinin ve tur operatörlerinin yurtdışı paket tur ihtiyaçlarına yönelik yenilikçi fikirlerle tur programları oluşturarak, çözüm ortağı olmayı iş modeli olarak benimser. İş birliği yaptığı seyahat acenteleri üzerinden son tüketiciye ulaşmayı ilke edinir.
+
               </p>
               <p className="text-gray-600 mb-4">
-                Şirketimiz, yurt içi ve yurt dışı turları, otel rezervasyonları, uçak biletleri, vize işlemleri ve transfer hizmetleri gibi geniş bir yelpazede hizmet vermektedir.
+              Dünyanın her yerinde otellerle ve tedarikçilerle direkt bağlantılarımız olması partnerlerimize rekabet edebilecekleri fiyatlar sunmamıza imkân veriyor.
+
               </p>
               <p className="text-gray-600 mb-8">
-                Misyonumuz, müşterilerimize unutulmaz seyahat deneyimleri yaşatmak ve beklentilerinin ötesinde hizmet sunmaktır.
+              Misyonumuz: Kaliteli Tur operatörlüğünü Yurtiçi ve Yurtdışı tüm acentelerimize sunup, Sektörde B2B alanında lider konuma gelmektir.
               </p>
             </div>
           </div>
@@ -91,11 +93,9 @@ export default function AboutPage() {
                 <div className="mb-8">
                   <h3 className="text-xl font-semibold text-gray-800 mb-4">Şirket Bilgileri</h3>
                   <ul className="space-y-2 text-gray-600">
-                    <li><span className="font-medium text-gray-700">Firma Ünvanı:</span> İnci DMC Turizm Ltd. Şti.</li>
-                    <li><span className="font-medium text-gray-700">Vergi Dairesi:</span> Ümraniye</li>
-                    <li><span className="font-medium text-gray-700">Vergi No:</span> 123 456 7890</li>
-                    <li><span className="font-medium text-gray-700">Ticaret Sicil No:</span> 123456</li>
-                    <li><span className="font-medium text-gray-700">Mersis No:</span> 0123456789000001</li>
+                    <li><span className="font-medium text-gray-700">Firma Ünvanı:</span> İNCİ ULUSLARARASI TURİZM TİCARET VE LİMİTED ŞİRKETİ</li>
+                    <li><span className="font-medium text-gray-700">Vergi Dairesi:</span> Kozyatağı Vergi Dairesi Telefon Numarası: 0216 660 0587</li>
+                    <li><span className="font-medium text-gray-700">Vergi No:</span> 4780927626</li>
                   </ul>
                 </div>
                 
@@ -103,8 +103,8 @@ export default function AboutPage() {
                   <h3 className="text-xl font-semibold text-gray-800 mb-4">Adres Bilgileri</h3>
                   <ul className="space-y-2 text-gray-600">
                     <li><span className="font-medium text-gray-700">Adres:</span> Atakent, Yavuzlar Plaza, Mithatpaşa Cd. no:72 D:4, 34400 Ümraniye/İstanbul</li>
-                    <li><span className="font-medium text-gray-700">Telefon:</span> <a href="tel:+905073011616" className="text-emerald-600 hover:underline">+90 507 301 16 16</a></li>
-                    <li><span className="font-medium text-gray-700">Email:</span> <a href="mailto:fatura@incidmcturizm.com" className="text-emerald-600 hover:underline">fatura@incidmcturizm.com</a></li>
+                    <li><span className="font-medium text-gray-700">Telefon:</span> <a href="tel:+905073011616" className="text-emerald-600 hover:underline">  +90 507 301 16 16  /  +90 216 660 05 87  </a></li>
+                    <li><span className="font-medium text-gray-700">Email:</span> <a href="mailto:fatura@incidmcturizm.com" className="text-emerald-600 hover:underline">info@incidmcturizm.com</a></li>
                   </ul>
                 </div>
               </div>

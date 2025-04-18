@@ -96,6 +96,28 @@ export default function TourDetailClient({ tour }: TourDetailProps) {
   const [canScrollRight, setCanScrollRight] = useState(true);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
+  // İyileştirilmiş mobil cihaz algılama
+  const [isMobileView, setIsMobileView] = useState(false)
+  
+  useEffect(() => {
+    // Sayfa yüklendiğinde ve pencere boyutu değiştiğinde kontrol et
+    const checkDevice = () => {
+      // Hem pencere genişliğini hem de User Agent'ı kontrol et
+      const width = window.innerWidth
+      const isMobile = width <= 768 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
+      setIsMobileView(isMobile)
+    }
+    
+    // Sayfa yüklendiğinde kontrol et
+    checkDevice()
+    
+    // Pencere boyutu değiştiğinde kontrol et
+    window.addEventListener('resize', checkDevice)
+    
+    // Temizleme
+    return () => window.removeEventListener('resize', checkDevice)
+  }, [])
+
   // Ekran boyutlarını ve yönünü izle
   useEffect(() => {
     // İlk render'da pencere boyutlarını ayarla
@@ -181,9 +203,9 @@ export default function TourDetailClient({ tour }: TourDetailProps) {
   const isMobilePortrait = isMobile && isPortrait;
 
   // İçeriği koşullu olarak render et
-  if (isMobilePortrait) {
+  if (isMobileView) {
     return (
-      <main className="bg-[#f1dbc4]">
+      <main className="bg-[#f1dbc4] overflow-x-hidden">
         {/* Hero Section - Mobil */}
         <section className="relative h-[50vh]">
           <div className="absolute inset-0">
@@ -552,7 +574,7 @@ export default function TourDetailClient({ tour }: TourDetailProps) {
 
   // Masaüstü veya yatay görünüm için orijinal tasarım
   return (
-    <main className="relative bg-[#f1dbc4]">
+    <main className="relative bg-[#f1dbc4] overflow-x-hidden">
       {/* Hero Section */}
       <section className="relative h-[60vh] mb-8">
         <div className="absolute inset-0">

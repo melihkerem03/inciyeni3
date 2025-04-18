@@ -1,0 +1,145 @@
+/* [next]/internal/font/google/playfair_display_db0e52a1.module.css [app-client] (css) */
+@font-face{
+  font-family: '__Playfair_Display_db0e52';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/playfairdisplay/v37/nuFiD-vYSZviVYUb_rj3ij__anPXDTjYgEM86xRbPQ.woff2) format('woff2');
+  unicode-range: u+0301, u+0400-045F, u+0490-0491, u+04B0-04B1, u+2116;
+}
+@font-face{
+  font-family: '__Playfair_Display_db0e52';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/playfairdisplay/v37/nuFiD-vYSZviVYUb_rj3ij__anPXDTPYgEM86xRbPQ.woff2) format('woff2');
+  unicode-range: u+0102-0103, u+0110-0111, u+0128-0129, u+0168-0169, u+01A0-01A1, u+01AF-01B0, u+0300-0301, u+0303-0304, u+0308-0309, u+0323, u+0329, u+1EA0-1EF9, u+20AB;
+}
+@font-face{
+  font-family: '__Playfair_Display_db0e52';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/playfairdisplay/v37/nuFiD-vYSZviVYUb_rj3ij__anPXDTLYgEM86xRbPQ.woff2) format('woff2');
+  unicode-range: u+0100-02BA, u+02BD-02C5, u+02C7-02CC, u+02CE-02D7, u+02DD-02FF, u+0304, u+0308, u+0329, u+1D00-1DBF, u+1E00-1E9F, u+1EF2-1EFF, u+2020, u+20A0-20AB, u+20AD-20C0, u+2113, u+2C60-2C7F, u+A720-A7FF;
+}
+@font-face{
+  font-family: '__Playfair_Display_db0e52';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/playfairdisplay/v37/nuFiD-vYSZviVYUb_rj3ij__anPXDTzYgEM86xQ.woff2) format('woff2');
+  unicode-range: u+0000-00FF, u+0131, u+0152-0153, u+02BB-02BC, u+02C6, u+02DA, u+02DC, u+0304, u+0308, u+0329, u+2000-206F, u+20AC, u+2122, u+2191, u+2193, u+2212, u+2215, u+FEFF, u+FFFD;
+}
+@font-face{
+  font-family: '__Playfair_Display_db0e52';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/playfairdisplay/v37/nuFiD-vYSZviVYUb_rj3ij__anPXDTjYgEM86xRbPQ.woff2) format('woff2');
+  unicode-range: u+0301, u+0400-045F, u+0490-0491, u+04B0-04B1, u+2116;
+}
+@font-face{
+  font-family: '__Playfair_Display_db0e52';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/playfairdisplay/v37/nuFiD-vYSZviVYUb_rj3ij__anPXDTPYgEM86xRbPQ.woff2) format('woff2');
+  unicode-range: u+0102-0103, u+0110-0111, u+0128-0129, u+0168-0169, u+01A0-01A1, u+01AF-01B0, u+0300-0301, u+0303-0304, u+0308-0309, u+0323, u+0329, u+1EA0-1EF9, u+20AB;
+}
+@font-face{
+  font-family: '__Playfair_Display_db0e52';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/playfairdisplay/v37/nuFiD-vYSZviVYUb_rj3ij__anPXDTLYgEM86xRbPQ.woff2) format('woff2');
+  unicode-range: u+0100-02BA, u+02BD-02C5, u+02C7-02CC, u+02CE-02D7, u+02DD-02FF, u+0304, u+0308, u+0329, u+1D00-1DBF, u+1E00-1E9F, u+1EF2-1EFF, u+2020, u+20A0-20AB, u+20AD-20C0, u+2113, u+2C60-2C7F, u+A720-A7FF;
+}
+@font-face{
+  font-family: '__Playfair_Display_db0e52';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/playfairdisplay/v37/nuFiD-vYSZviVYUb_rj3ij__anPXDTzYgEM86xQ.woff2) format('woff2');
+  unicode-range: u+0000-00FF, u+0131, u+0152-0153, u+02BB-02BC, u+02C6, u+02DA, u+02DC, u+0304, u+0308, u+0329, u+2000-206F, u+20AC, u+2122, u+2191, u+2193, u+2212, u+2215, u+FEFF, u+FFFD;
+}
+@font-face{
+  font-family: '__Playfair_Display_db0e52';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/playfairdisplay/v37/nuFiD-vYSZviVYUb_rj3ij__anPXDTjYgEM86xRbPQ.woff2) format('woff2');
+  unicode-range: u+0301, u+0400-045F, u+0490-0491, u+04B0-04B1, u+2116;
+}
+@font-face{
+  font-family: '__Playfair_Display_db0e52';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/playfairdisplay/v37/nuFiD-vYSZviVYUb_rj3ij__anPXDTPYgEM86xRbPQ.woff2) format('woff2');
+  unicode-range: u+0102-0103, u+0110-0111, u+0128-0129, u+0168-0169, u+01A0-01A1, u+01AF-01B0, u+0300-0301, u+0303-0304, u+0308-0309, u+0323, u+0329, u+1EA0-1EF9, u+20AB;
+}
+@font-face{
+  font-family: '__Playfair_Display_db0e52';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/playfairdisplay/v37/nuFiD-vYSZviVYUb_rj3ij__anPXDTLYgEM86xRbPQ.woff2) format('woff2');
+  unicode-range: u+0100-02BA, u+02BD-02C5, u+02C7-02CC, u+02CE-02D7, u+02DD-02FF, u+0304, u+0308, u+0329, u+1D00-1DBF, u+1E00-1E9F, u+1EF2-1EFF, u+2020, u+20A0-20AB, u+20AD-20C0, u+2113, u+2C60-2C7F, u+A720-A7FF;
+}
+@font-face{
+  font-family: '__Playfair_Display_db0e52';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/playfairdisplay/v37/nuFiD-vYSZviVYUb_rj3ij__anPXDTzYgEM86xQ.woff2) format('woff2');
+  unicode-range: u+0000-00FF, u+0131, u+0152-0153, u+02BB-02BC, u+02C6, u+02DA, u+02DC, u+0304, u+0308, u+0329, u+2000-206F, u+20AC, u+2122, u+2191, u+2193, u+2212, u+2215, u+FEFF, u+FFFD;
+}
+@font-face{
+  font-family: '__Playfair_Display_db0e52';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/playfairdisplay/v37/nuFiD-vYSZviVYUb_rj3ij__anPXDTjYgEM86xRbPQ.woff2) format('woff2');
+  unicode-range: u+0301, u+0400-045F, u+0490-0491, u+04B0-04B1, u+2116;
+}
+@font-face{
+  font-family: '__Playfair_Display_db0e52';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/playfairdisplay/v37/nuFiD-vYSZviVYUb_rj3ij__anPXDTPYgEM86xRbPQ.woff2) format('woff2');
+  unicode-range: u+0102-0103, u+0110-0111, u+0128-0129, u+0168-0169, u+01A0-01A1, u+01AF-01B0, u+0300-0301, u+0303-0304, u+0308-0309, u+0323, u+0329, u+1EA0-1EF9, u+20AB;
+}
+@font-face{
+  font-family: '__Playfair_Display_db0e52';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/playfairdisplay/v37/nuFiD-vYSZviVYUb_rj3ij__anPXDTLYgEM86xRbPQ.woff2) format('woff2');
+  unicode-range: u+0100-02BA, u+02BD-02C5, u+02C7-02CC, u+02CE-02D7, u+02DD-02FF, u+0304, u+0308, u+0329, u+1D00-1DBF, u+1E00-1E9F, u+1EF2-1EFF, u+2020, u+20A0-20AB, u+20AD-20C0, u+2113, u+2C60-2C7F, u+A720-A7FF;
+}
+@font-face{
+  font-family: '__Playfair_Display_db0e52';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/playfairdisplay/v37/nuFiD-vYSZviVYUb_rj3ij__anPXDTzYgEM86xQ.woff2) format('woff2');
+  unicode-range: u+0000-00FF, u+0131, u+0152-0153, u+02BB-02BC, u+02C6, u+02DA, u+02DC, u+0304, u+0308, u+0329, u+2000-206F, u+20AC, u+2122, u+2191, u+2193, u+2212, u+2215, u+FEFF, u+FFFD;
+}
+@font-face{
+  font-family: '__Playfair_Display_Fallback_db0e52';
+  src: local("Times New Roman");
+  ascent-override: 96.37%;
+  descent-override: 22.36%;
+  line-gap-override: 0.00%;
+  size-adjust: 112.28%;
+}
+.className__playfair_display_db0e52a1__86beec5f {
+  font-family: '__Playfair_Display_db0e52', '__Playfair_Display_Fallback_db0e52';
+  font-style: normal;
+}
+.variable__playfair_display_db0e52a1__86beec5f {
+  --font-butler: '__Playfair_Display_db0e52', '__Playfair_Display_Fallback_db0e52';
+}
+/*# sourceMappingURL=[next]_internal_font_google_playfair_display_db0e52a1_module_b52d8e.css.map*/

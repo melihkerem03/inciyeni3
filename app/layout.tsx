@@ -31,8 +31,9 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link rel="icon" type="image/svg+xml" href="/incidmclogo.jpg" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
       </head>
-      <body className={`${inter.className} ${playfair.variable} relative`}>
+      <body className={`${inter.className} ${playfair.variable} relative overflow-x-hidden`}>
         {/* Ana arka plan pattern */}
         <div className="fixed inset-0 w-full min-h-screen z-0">
           <Image
